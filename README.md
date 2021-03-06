@@ -28,3 +28,4 @@
    
 3. Backend импортировать в IDE как maven проект
 
+![image](https://user-images.githubusercontent.com/47406394/110204994-2288af80-7e87-11eb-99db-463bc3974244.png)
