@@ -8,6 +8,7 @@
 </in dev>
 
 # Установка
+<pre>
 1. Настройка nginx reverse proxy:
    Файл default закинуть в конфигурацию nginx (вероятно в /etc/nginx/sites-avaliable/).
    Там же изменить ip-адресса. Порт 4200 ведёт на vue, порт 8081 - на spring boot.
@@ -27,5 +28,5 @@
    </code>
    
 3. Backend импортировать в IDE как maven проект
-
+</pre>
 ![image](https://user-images.githubusercontent.com/47406394/110204994-2288af80-7e87-11eb-99db-463bc3974244.png)
