@@ -10,10 +10,12 @@
 <script>
 
 const axios = require('axios');
-const url = 'http://192.168.10.105:8081'
-// axios.get(url).then(function(axiosTestResult) {
-//   return axiosTestResult.data;
-// })
+const url = 'http://localhost:8081';
+// console.log(url);
+axios.get(url).then(function(axiosTestResult) {
+	console.log(axiosTestResult.data);
+	return axiosTestResult.data;
+});
 
 export default {
 	name: 'HelloWorld',
@@ -32,6 +34,7 @@ export default {
 				this.text0 = response.data;
 			})
 			.catch(function(e){
+				console.log(e.toJSON());
 				this.error = e;
 		});
 	}

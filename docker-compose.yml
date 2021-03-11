@@ -1,0 +1,26 @@
+version: '3'
+services:
+  docker-nginx:
+    build:
+      context: ./nginx/
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+      - 8081:8081
+    restart: always
+  docker-backend:
+    build:
+      context: ./backend/docholder/
+      dockerfile: Dockerfile
+    restart: always
+    depends_on: 
+      - docker-nginx
+  docker-frontend:
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    restart: always
+    depends_on: 
+      - docker-nginx
+    volumes:
+      - ./frontend:/frontend
