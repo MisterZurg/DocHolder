@@ -1,23 +1,12 @@
 package com.docholder.model;
 
-// Шаблон на будущее
-public class Document {
+import lombok.Data;
+
+@Data
+public class Document {     // need 2 decide name File
     private Integer id;
     private String name;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id){
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    // TODO : private ... fileRole (documentRole)
+    private Integer companyID;
+    private Integer userID; // author
 }

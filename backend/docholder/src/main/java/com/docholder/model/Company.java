@@ -1,23 +1,13 @@
 package com.docholder.model;
 
-// Шаблон на будущее
+import lombok.Data;
+
+@Data
 public class Company {
     private Integer id;
     private String name;
+    private String description;
+    // TODO : private ... logo;
+    private boolean companyStatus;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id){
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

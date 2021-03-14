@@ -5,25 +5,26 @@ import java.util.Map;
 
 public class Repository {
     // Клиенты
-    static Map<Integer, Client> clients = new Hashtable<>();
+    static Map<Integer, User> users = new Hashtable<>();
 
     static {
-        clients.put(1, new Client(1, "Игнат"));
-        clients.put(2, new Client(2, "Christopher"));
-        clients.put(3, new Client(3, "Егор"));
+        users.put(1, new User(1, "Игнат"));
+        users.put(2, new User(2, "Christopher"));
+        users.put(3, new User(3, "Егор"));
+        users.put(4, new User(4 ,"Гибон"));
     }
 
-    public Client clientById(Integer id) {
-        return clients.get(id);
+    public User userById(Integer id) {
+        return users.get(id);
     }
 
-    public Client addClient(Client cl) {
-        clients.put(cl.getId(), cl);
-        return cl;
+    public User addUser(User usr) {
+        users.put(usr.getId(), usr);
+        return usr;
     }
 
-    public Client deleteClient(Integer id){
-        return clients.remove(id);
+    public User deleteUser(Integer id){
+        return users.remove(id);
     }
     // Предприятия
     // private List<Map<String, String>> companies = new ArrayList<Map<String, String>>() {{

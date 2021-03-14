@@ -1,7 +1,7 @@
 package com.docholder.controllers;
 
-import com.docholder.model.Client;
 import com.docholder.model.Repository;
+import com.docholder.model.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -9,30 +9,30 @@ public class MainController {
     Repository rep = new Repository();
 
     // Поиск клиента
-    @GetMapping("/clients")
-    public Client clientById(
+    @GetMapping("/users")
+    public User userById(
             @RequestParam(value = "id") Integer id) {
-        return rep.clientById(id);
+        return rep.userById(id);
     }
 
-    @PostMapping("/clients")
-    public Client setClient(
+    @PostMapping("/users")
+    public User setUser(
             @RequestParam(value = "id") int id,
             @RequestParam(value = "name") String name) {
-        Client cl = rep.clientById(id);
-        if (cl != null) {
-            cl.setName(name);
-            return cl;
+        User usr = rep.userById(id);
+        if (usr != null) {
+            usr.setName(name);
+            return usr;
         } else {
-            return rep.addClient(new Client(id, name));
+            return rep.addUser(new User(id, name));
         }
     }
 
-    @DeleteMapping("/clients")
-    public Client deleteClient(
+    @DeleteMapping("/users")
+    public User deleteUser(
             @RequestParam(value = "id") Integer id) {
         /// Client cl = rep.clientById(id);
-        return rep.deleteClient(id);
+        return rep.deleteUser(id);
     }
     // Мозг отказал, мапинг выше уже реализует POST / UPDATE
     /*
