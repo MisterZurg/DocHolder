@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a76cbb1f-19a2-43b5-9ca6-8043b372d873" name="Default Changelist" comment="UPDATE REST controller #3&#10;Renamed controller, Added entities.">
+    <list default="true" id="a76cbb1f-19a2-43b5-9ca6-8043b372d873" name="Default Changelist" comment="REST controller #3&#10;Still fighting with merge">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -15,7 +17,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="T3" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -36,7 +38,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
-  <component name="RunManager" selected="Application.DocholderApplication">
+  <component name="RunManager">
     <configuration name="DocholderApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.docholder.DocholderApplication" />
       <module name="docholder" />
@@ -86,6 +88,14 @@
       <updated>1615736641573</updated>
       <workItem from="1615736643642" duration="322000" />
     </task>
+    <task id="LOCAL-00001" summary="REST controller #3&#10;Still fighting with merge">
+      <created>1615842178013</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1615842178013</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -102,5 +112,9 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="REST controller #3&#10;Still fighting with merge" />
+    <option name="LAST_COMMIT_MESSAGE" value="REST controller #3&#10;Still fighting with merge" />
   </component>
 </project>
