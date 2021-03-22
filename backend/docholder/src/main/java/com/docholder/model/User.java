@@ -12,10 +12,9 @@ import java.util.UUID;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
     @Id
-    @Column(name = "uid")
-    @SequenceGenerator(name = "usersUIdSeq", sequenceName = "users_uid_seq", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usersIdSeq")
-    private UUID uid;
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -29,17 +28,17 @@ public class User {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "companyID")
-    private Integer companyID;
-
+    @Column(name = "company_id")
+    private UUID company_id;
+    /*
+    @Column(name = "column_name")
+    @Enumerated(value = EnumType.STRING)
     private UserRole role;
+
     // TODO : private ... profilePicture;
+    @Column(name = "column_name")
+    @Enumerated(value = EnumType.STRING)
     private UserGender gender;
 
-    /*
-     public User(UUID id, String name) {
-        this.id = id;
-        this.name = name;
-    }
     */
 }

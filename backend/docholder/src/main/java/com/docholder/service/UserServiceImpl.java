@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService{
     // @Override
     public boolean update(User user, UUID uid) {
         if (userRepository.existsById(uid)){
-            user.setUid(uid);
+            user.setId(uid);
             userRepository.save(user);
             return true;
         }

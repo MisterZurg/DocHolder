@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 public class CompanyController {
     @GetMapping
     public Company getCompany(){
-        //    @RequestParam(value = "id") Integer id) {
+        //    TODO : Add logic
         return null;
     }
     @PostMapping

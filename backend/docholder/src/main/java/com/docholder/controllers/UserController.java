@@ -37,10 +37,10 @@ public class UserController {
 
     @GetMapping(value ="/{uid}")
     public ResponseEntity<User> read(@PathVariable(name = "uid") UUID uid) {
-        final User client = userService.read(uid);
+        final User user = userService.read(uid);
 
-        return client != null
-                ? new ResponseEntity<>(client, HttpStatus.OK)
+        return user != null
+                ? new ResponseEntity<>(user, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
