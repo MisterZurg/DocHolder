@@ -4,6 +4,7 @@ import Axios from 'axios'
 import VueRouter from "vue-router"
 import index from './components/index'
 import regUser from './components/regUser'
+import loginUser from './components/loginUser'
 
 // router
 Vue.use(VueRouter);
@@ -14,8 +15,12 @@ const routes = [
 		component: index
 	},
 	{
-		path: "/reguser",
+		path: "/reg-user",
 		component: regUser
+	},
+	{
+		path: "/login-user",
+		component: loginUser
 	}
 ];
 

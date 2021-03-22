@@ -8,10 +8,10 @@
 				<input type="text" placeholder="Искать">
 			</div>
 			<div class="header-login">
-				<router-link to='/reguser'>
+				<router-link to='/login-user'>
 					<button>Войти</button>
 				</router-link>
-				<router-link to='/reguser'>
+				<router-link to='/reg-user'>
 					<button>Регистрация</button>
 				</router-link>
 			</div>

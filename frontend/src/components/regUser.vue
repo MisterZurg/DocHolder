@@ -135,6 +135,7 @@ export default {
 				.catch(function(error) {
 					console.log(error);
 				});
+			this.$router.push('/');
 
 				// JWT
 			// this.$http({url: 'auth', data: user, method: 'POST' })
@@ -147,7 +148,7 @@ export default {
 			// 		localStorage.removeItem('user-token') ;
 			// 		console.log(err);
 			// })
-			
+
 		}
 	}
 }
