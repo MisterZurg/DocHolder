@@ -135,6 +135,19 @@ export default {
 				.catch(function(error) {
 					console.log(error);
 				});
+
+				// JWT
+			// this.$http({url: 'auth', data: user, method: 'POST' })
+			// 	.then(resp => {
+			// 		const token = resp.data.token;
+			// 		localStorage.setItem('user-token', token);
+			// 		console.log(resp);
+			// 	})
+			// 	.catch(err => {
+			// 		localStorage.removeItem('user-token') ;
+			// 		console.log(err);
+			// })
+			
 		}
 	}
 }
