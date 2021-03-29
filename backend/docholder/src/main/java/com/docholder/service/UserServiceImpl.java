@@ -31,6 +31,14 @@ public class UserServiceImpl implements UserService{
         return userRepository.getOne(uid);
     }
 
+    public User readByEmail(String email){
+        return userRepository.findUserByEmail(email);
+    }
+
+    public User authorization(String email, String passmord) {
+        return userRepository.findUser(email, passmord);
+    }
+
     // @Override
     public boolean update(User user, UUID uid) {
         if (userRepository.existsById(uid)){

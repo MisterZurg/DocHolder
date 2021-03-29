@@ -1,7 +1,7 @@
 package com.docholder.model;
 
 public enum UserRole {
-    ADMIN,
+    ADMINISTRATOR,
     DIRECTOR,
     ACCOUNTANT,
     REGULAR,

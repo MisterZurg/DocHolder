@@ -5,6 +5,9 @@
 			<div class="title-reguser">Авторизация</div>
 			<input type="text" ref="email" placeholder="E-mail">
 			<input type="password" ref="password" placeholder="Пароль">
+
+			<p class="error">{{errorText}}</p>
+
 			<button v-on:click="validation">Войти</button>
 		</div>
 		</form>
@@ -13,14 +16,17 @@
 
 <script>
 
-// const axios = require('axios');
-document.title = "User Reg";
+document.title = "Авторизация";
 
 export default {
 	name: 'reguser',
 	props: {},
-	data() {return{}},
-	mounted: function() {},
+	data() {
+		return{
+			errorText: ""
+		}
+	},
+	mounted: function () {},
 	methods: {
 		// Set red border and background of input if validation wasn't success
 		setStyles: function(elem, setRight){
@@ -31,6 +37,7 @@ export default {
 			else{
 				elem.style.border = "1px solid #B00020";
 				elem.style.backgroundColor = "#fee";
+				this.errorText = "Все поля необходимо заполнить корректно";
 			}
 			return setRight;
 		},
@@ -54,6 +61,9 @@ export default {
 
 			// if all inputs are correct we form data for sending
 			if(isFullCorrect){
+				// delete error text
+				this.errorText = "";
+
 				this.sendForm(
 					this.$refs.email.value,
 					this.$refs.password.value
@@ -63,9 +73,63 @@ export default {
 		// send json to backend server
 		// for now here is just example
 		sendForm: function(email, password) {
-			console.log(email);
-			console.log(password);
-			this.$router.push('/');
+			var query = this.$http(
+				{
+					method: 'post',
+					url: 'http://localhost:8082/user/auth',
+					data: {
+						"email": email,
+						"password": password
+					},
+					headers: {
+						"Content-type": "application/json; charset=UTF-8"
+					}
+				})
+				.then(function(response) {
+					// console.log(response.data);
+					
+					// decrypt JWT payload to simple json with UTF-8 support
+					var token = response.data.split('.');
+					var payloadBase64 = token[1].replace(/-/g, '+').replace(/_/g, '/');
+					var payload = JSON.parse(decodeURIComponent(atob(payloadBase64).split('').map(function(c) {
+						return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+					}).join('')));
+
+					console.log(payload);
+
+					// save user data in local storage
+					localStorage.setItem('token', response.data);
+					localStorage.setItem('exp', payload.exp);
+					localStorage.setItem('id', payload.id);
+					localStorage.setItem('name', payload.name);
+					localStorage.setItem('surname', payload.surname);
+					localStorage.setItem('email', payload.email);
+					localStorage.setItem('phone', payload.phone);
+					localStorage.setItem('role', payload.role);
+					localStorage.setItem('gender', payload.gender);
+					localStorage.setItem('company_id', payload.company_id);
+				})
+				.catch(function(error) {
+					// console.log(error);
+					return error;
+				});
+
+			query.then((error) => {
+					// if error happened
+					if(error != undefined){
+						let status = error.response.status;
+						if(status == 404){
+							this.errorText = "Пользователя с такими данными не существует";
+						}else{
+							this.errorText = "Произошла внутренняя ошибка. Попробуйте позже";
+						}
+						return;
+					}
+
+					// if no error
+					this.$parent.login();
+					this.$router.push('/');
+				});
 		}
 	}
 }
@@ -108,6 +172,12 @@ export default {
 .main-reguser button{
 	display: block;
 	margin: 25px auto;
+}
+.error{
+	margin-top: 15px;
+	margin-bottom: -10px;
+	text-align: center;
+	color: #B00020;
 }
 
 
