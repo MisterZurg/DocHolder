@@ -11,6 +11,7 @@ import java.util.UUID;
 @Table(name = "users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,11 +26,22 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "password")
+    private String password;
+
     @Column(name = "phone")
     private String phone;
 
+    @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
+    private UserGender gender;
+
     @Column(name = "company_id")
     private UUID company_id;
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
     /*
     @Column(name = "column_name")
     @Enumerated(value = EnumType.STRING)
