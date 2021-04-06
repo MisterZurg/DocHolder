@@ -5,5 +5,5 @@ public enum CompanyStatus {
     READY_TO_VERIFY,
     APPROVED,
     NOT_APPROVED,
-    PUBLISHED // VERIFIED
+    PUBLISHED
 }
