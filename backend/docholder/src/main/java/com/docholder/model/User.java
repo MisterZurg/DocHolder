@@ -42,15 +42,4 @@ public class User {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private UserRole role;
-    /*
-    @Column(name = "column_name")
-    @Enumerated(value = EnumType.STRING)
-    private UserRole role;
-
-    // TODO : private ... profilePicture;
-    @Column(name = "column_name")
-    @Enumerated(value = EnumType.STRING)
-    private UserGender gender;
-
-    */
 }
