@@ -5,6 +5,7 @@ import VueRouter from "vue-router"
 import index from './components/index'
 import regUser from './components/regUser'
 import loginUser from './components/loginUser'
+import companies from './components/companies'
 
 // router
 Vue.use(VueRouter);
@@ -21,7 +22,11 @@ const routes = [
 	{
 		path: "/login-user",
 		component: loginUser
-	}
+	},
+    {
+        path: "/companies",
+        component: companies
+    }
 ];
 
 const router = new VueRouter({
