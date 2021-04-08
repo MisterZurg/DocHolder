@@ -7,13 +7,19 @@
 			<div class="header-search">
 				<input type="text" placeholder="Искать">
 			</div>
-			<div class="header-login">
+			<div class="header-authorization" ref="headerAuthorization">
 				<router-link to='/login-user'>
 					<button>Войти</button>
 				</router-link>
 				<router-link to='/reg-user'>
 					<button>Регистрация</button>
 				</router-link>
+			</div>
+			<div class="header-account" ref="headerAccount">
+				<router-link to='/account'>
+					{{name}} {{surname}}
+				</router-link>
+				<button v-on:click="logout">Выйти</button>
 			</div>
 		</div>
 	<!-- <HelloWorld msg="Home page"/> -->
@@ -26,7 +32,45 @@
 <script>
 
 export default {
-	name: 'App'
+
+	name: 'App',
+	data() {
+		return{
+			name: "",
+			surname: ""
+		}
+	},
+	mounted: function () {
+		this.login();
+	},
+	methods: {
+		// is user authorized
+		login: function (){
+			if(localStorage.getItem('id') != null){
+
+				// if token had expired we should logout user
+				let timeNow = Math.floor(Date.now() / 1000);
+				if(timeNow > localStorage.getItem('exp')){
+					this.logout();
+					return;
+				}
+
+				// change header style
+				this.name = localStorage.getItem('name');
+				this.surname = localStorage.getItem('surname');
+				this.$refs.headerAuthorization.style.display = "none";
+				this.$refs.headerAccount.style.display = "flex";
+			}
+		},
+		// logout user if logout button had clicked or JWT expired
+		logout: function (){
+			localStorage.clear();
+			this.$refs.headerAuthorization.style.display = "flex";
+			this.$refs.headerAccount.style.display = "none";
+			this.$router.push('/').catch(()=>{});
+		}
+	}
+
 }
 
 </script>
@@ -120,15 +164,20 @@ export default {
 /*	.header-search input::placeholder {
 		color: #aaa;
 	}*/
-	.header-login{
+	.header-authorization,
+	.header-account{
 		display: flex;
 		align-items: center;
 		width: 300px;
 		/*border: 1px solid green;*/
 	}
-	.header-login a{
+	.header-authorization a,
+	.header-account a{
 		margin-right: 25px;
 		/*border: 1px solid red;*/
+	}
+	.header-account{
+		display: none;
 	}
 	/*.header-login button{
 		padding: 8px;

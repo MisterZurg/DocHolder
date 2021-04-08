@@ -11,12 +11,14 @@
 			<input type="text" ref="number" placeholder="Номер">
 			<div class="gender-reguser">
 				<p>Пол:</p>
-				<input type="radio" name="gender" value="male" id="male" ref="male" checked>
+				<input type="radio" name="gender" value="MALE" id="male" ref="male" checked>
 				<label for="male">Мужчина</label>
-				<input type="radio" name="gender" value="female" id="female">
+				<input type="radio" name="gender" value="FEMALE" id="female">
 				<label for="female">Женщина</label>
 				<!-- <p>фотография</p> -->
 			</div>
+
+			<p class="error">{{errorText}}</p>
 
 			<button v-on:click="validation">Зарегистрироваться</button>
 		</div>
@@ -27,12 +29,16 @@
 <script>
 
 // const axios = require('axios');
-document.title = "User Reg";
+document.title = "Регистрация";
 
 export default {
 	name: 'reguser',
 	props: {},
-	data() {return{}},
+	data() {
+		return{
+			errorText: ""
+		}
+	},
 	mounted: function() {},
 	methods: {
 		// Set red border and background of input if validation wasn't success
@@ -44,6 +50,7 @@ export default {
 			else{
 				elem.style.border = "1px solid #B00020";
 				elem.style.backgroundColor = "#fee";
+				this.errorText = "Все поля необходимо заполнить корректно";
 			}
 			return setRight;
 		},
@@ -83,16 +90,21 @@ export default {
 
 			// if all inputs are correct we form data for sending
 			if(isFullCorrect){
+				// delete error text
+				this.errorText = "";
+				// name and surname should begin with uppercase letter
 				let name = this.$refs.name.value[0].toUpperCase() + this.$refs.name.value.slice(1);
 				let surname = this.$refs.surname.value[0].toUpperCase() + this.$refs.surname.value.slice(1);
-				// here would be password encrypt
+				// cut '8' or '+7' from phone number
 				let number = "";
 				if(this.$refs.number.value[0] =='+') number = this.$refs.number.value.slice(2);
 				else if(this.$refs.number.value[0] =='8') number = this.$refs.number.value.slice(1);
 				else if(this.$refs.number.value[0] =='7') number = this.$refs.number.value.slice(1);
+				// gender
 				let gender = "";
-				if (this.$refs.male.checked) gender = "Мужчина";
-				else gender = "Женщина";
+				if (this.$refs.male.checked) gender = "MALE";
+				else gender = "FEMALE";
+
 				this.sendForm(
 					name,
 					surname,
@@ -104,51 +116,46 @@ export default {
 			}
 		},
 		// send json to backend server
-		// for now here is just example
 		sendForm: function(name, surname, email, password, number, gender) {
-			console.log(name);
-			console.log(surname);
-			console.log(email);
-			console.log(password);
-			console.log(number);
-			console.log(gender);
-			this.$http(
+			var query = this.$http(
 				{
 					method: 'post',
-					url: 'https://jsonplaceholder.typicode.com/posts',
-					params: {
-						user_key_id: '15',
-					},
+					url: 'http://localhost:8082/user',
 					data: {
-						title: 'new_title',
-						body: 'new_body',
-						userId: '45'
+						"name": name,
+						"surname": surname,
+						"email": email,
+						"password": password,
+						"phone": number,
+						"gender": gender
 					},
 					headers: {
 						"Content-type": "application/json; charset=UTF-8"
 					}
 				})
 				.then(function(response) {
-					console.log('Ответ сервера успешно получен!');
 					console.log(response.data);
 				})
 				.catch(function(error) {
-					console.log(error);
+					// console.log(error);
+					return error;
 				});
-			this.$router.push('/');
 
-				// JWT
-			// this.$http({url: 'auth', data: user, method: 'POST' })
-			// 	.then(resp => {
-			// 		const token = resp.data.token;
-			// 		localStorage.setItem('user-token', token);
-			// 		console.log(resp);
-			// 	})
-			// 	.catch(err => {
-			// 		localStorage.removeItem('user-token') ;
-			// 		console.log(err);
-			// })
+			query.then((error) => {
+					// if error happened
+					if(error != undefined){
+						let status = error.response.status;
+						if(status == 409){
+							this.errorText = "Пользователь с такой почтой уже зарегистрирован";
+						}else{
+							this.errorText = "Произошла внутренняя ошибка. Попробуйте позже";
+						}
+						return;
+					}
 
+					// if no error
+					this.$router.push('/login-user');
+				});
 		}
 	}
 }
@@ -191,6 +198,12 @@ export default {
 .main-reguser button{
 	display: block;
 	margin: 25px auto;
+}
+.error{
+	margin-top: 15px;
+	margin-bottom: -10px;
+	text-align: center;
+	color: #B00020;
 }
 
 

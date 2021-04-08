@@ -2,19 +2,17 @@ package com.docholder.service;
 
 import com.docholder.model.User;
 import com.docholder.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
-
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public void create(User user) {
@@ -27,14 +25,22 @@ public class UserServiceImpl implements UserService{
     }
 
     // @Override
-    public User read(UUID uid) {
-        return userRepository.getOne(uid);
+    public User read(UUID id) {
+        return userRepository.getOne(id);
+    }
+
+    public User readByEmail(String email){
+        return userRepository.findUserByEmail(email);
+    }
+
+    public User authorization(String email, String password) {
+        return userRepository.findUser(email, password);
     }
 
     // @Override
-    public boolean update(User user, UUID uid) {
-        if (userRepository.existsById(uid)){
-            user.setId(uid);
+    public boolean update(User user, UUID id) {
+        if (userRepository.existsById(id)){
+            user.setId(id);
             userRepository.save(user);
             return true;
         }
@@ -42,9 +48,9 @@ public class UserServiceImpl implements UserService{
     }
 
     // @Override
-    public boolean delete(UUID uid) {
-        if (userRepository.existsById(uid)) {
-            userRepository.deleteById(uid);
+    public boolean delete(UUID id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
             return true;
         }
         return false;

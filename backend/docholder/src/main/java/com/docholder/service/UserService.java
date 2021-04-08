@@ -27,6 +27,10 @@ public interface UserService {
      */
     User read(UUID uid);
 
+    User readByEmail(String email);
+
+    User authorization(String email, String password);
+
     /**
      * Обновляет пользователя с заданным UID,
      * в соответствии с переданным пользователем
