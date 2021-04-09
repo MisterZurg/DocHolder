@@ -32,6 +32,7 @@
 <script>
 
 export default {
+
 	name: 'App',
 	data() {
 		return{
@@ -69,7 +70,9 @@ export default {
 			this.$router.push('/').catch(()=>{});
 		}
 	}
+
 }
+
 </script>
 
 <style>
