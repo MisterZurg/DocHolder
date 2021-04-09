@@ -1,6 +1,8 @@
 package com.docholder.controllers;
 
 import com.docholder.model.Company;
+import com.docholder.model.CompanyDto;
+import com.docholder.model.CompanyMapper;
 import com.docholder.model.CompanyStatus;
 import com.docholder.service.CompanyService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,18 +22,17 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-
 @RestController
 @RequestMapping("/company")
 @RequiredArgsConstructor
 public class CompanyController {
 
     private final CompanyService companyService;
+    private final CompanyMapper companyMapper;
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Company company) {
+    public ResponseEntity<?> create(@RequestBody CompanyDto companyDto) {
+        Company company = companyMapper.dtoToEntity(companyDto);
         company.setStatus(CompanyStatus.DRAFT);
         companyService.create(company);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -42,7 +43,7 @@ public class CompanyController {
         final Company company = companyService.read(id);
 
         return company != null
-                ? new ResponseEntity(company, HttpStatus.OK)
+                ? new ResponseEntity(companyMapper.entityToDto(company), HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -54,9 +55,11 @@ public class CompanyController {
         Pageable pageable = PageRequest.of(page, limit);
         Page<Company> companies = companyService.findAllByPage(pageable);
 
+//        How To
+//        Page<CompanyDto> companiesDto;
+
         return companies != null &&  !companies.isEmpty()
                 ? new ResponseEntity(companies, HttpStatus.OK)
-//                ? new ResponseEntity<>(companies, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -71,9 +74,10 @@ public class CompanyController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<?> update(@PathVariable(name = "id") UUID id, @RequestBody Company company) {
-        final boolean updated = companyService.update(company, id);
+    @PutMapping
+    public ResponseEntity<?> update(@RequestBody CompanyDto companyDto) {
+        Company company = companyMapper.dtoToEntity(companyDto);
+        final boolean updated = companyService.update(company, company.getId());
 
         return updated
                 ? new ResponseEntity<>(HttpStatus.OK)

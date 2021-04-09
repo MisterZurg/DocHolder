@@ -1,6 +1,7 @@
 package com.docholder.utilities;
 
 import com.docholder.model.User;
+import com.docholder.model.UserDto;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,8 +23,8 @@ import java.util.Map;
 public class GenerateJwtImpl implements GenerateJwt{
     String token = null;
 
-    public String generateTokenByUser(User user){
-        Map<String, Object> data = setData(user);
+    public String generateTokenByUser(UserDto userDto){
+        Map<String, Object> data = setData(userDto);
 
         // now and expire time
         Date now = new Date();
@@ -54,16 +55,16 @@ public class GenerateJwtImpl implements GenerateJwt{
     }
 
     // put user data to Map
-    private Map setData(User user){
+    private Map setData(UserDto userDto){
         Map<String, Object> data = new HashMap<>();
-        data.put("id", user.getId());
-        data.put("surname", user.getSurname());
-        data.put("name", user.getName());
-        data.put("email", user.getEmail());
-        data.put("phone", user.getPhone());
-        data.put("role", user.getRole());
-        data.put("gender", user.getGender());
-        data.put("company_id", user.getCompany_id());
+        data.put("id", userDto.getId());
+        data.put("surname", userDto.getSurname());
+        data.put("name", userDto.getName());
+        data.put("email", userDto.getEmail());
+        data.put("phone", userDto.getPhone());
+        data.put("role", userDto.getRole());
+        data.put("gender", userDto.getGender());
+        data.put("company_id", userDto.getCompany_id());
         return data;
     }
 }
