@@ -13,6 +13,8 @@ public interface CompanyService {
 
     void create(Company company);
 
+    long count();
+
     List<Company> readAll();
 
     Company read(UUID id);

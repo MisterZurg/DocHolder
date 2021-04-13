@@ -25,6 +25,11 @@ public class CompanyServiceImpl implements CompanyService{
     }
 
     @Override
+    public long count(){
+        return companyRepository.count();
+    }
+
+    @Override
     public List<Company> readAll() {
 
         return companyRepository.findAll();

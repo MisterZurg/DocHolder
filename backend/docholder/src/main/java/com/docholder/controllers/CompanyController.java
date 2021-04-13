@@ -38,6 +38,11 @@ public class CompanyController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @GetMapping(value ="/count")
+    public ResponseEntity<List<Company>> count() {
+        return new ResponseEntity(companyService.count(), HttpStatus.OK);
+    }
+
     @GetMapping(value ="/{id}}")
     public ResponseEntity<List<Company>> read(@PathVariable(name = "id") UUID id) {
         final Company company = companyService.read(id);
@@ -47,19 +52,17 @@ public class CompanyController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping(value ="/{limit}/{page}")
+    @GetMapping
     public ResponseEntity<List<Company>> readAllByPage(
-            @PathVariable(name = "limit") int limit,
-            @PathVariable(name = "page") int page)
+            @RequestParam(name = "limit") int limit,
+            @RequestParam(name = "page") int page)
     {
         Pageable pageable = PageRequest.of(page, limit);
         Page<Company> companies = companyService.findAllByPage(pageable);
 
-//        How To
-//        Page<CompanyDto> companiesDto;
-
-        return companies != null &&  !companies.isEmpty()
-                ? new ResponseEntity(companies, HttpStatus.OK)
+        Page<CompanyDto> companiesDto = companyMapper.entityToDto(companies);
+        return companiesDto != null &&  !companiesDto.isEmpty()
+                ? new ResponseEntity(companiesDto, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
