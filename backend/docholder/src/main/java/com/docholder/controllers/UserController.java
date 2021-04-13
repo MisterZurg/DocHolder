@@ -39,33 +39,26 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<List<User>> read() {
-        final List<User> users = userService.readAll();
-
-//        How To convert List<User> to List<UserDto>????
-//                  shit code
-//        List<UserDto> usersDto = null;
-//        users.stream().forEach(user -> {
-//            usersDto.add( userMapper.entityToDto(user) );
-//        });
-
-        return users != null &&  !users.isEmpty()
-                ? new ResponseEntity<>(users, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-//    @GetMapping(value ="/{uid}")
-//    public ResponseEntity<User> read(@PathVariable(name = "uid") UUID uid) {
+//    @GetMapping
+//    public ResponseEntity<List<User>> read() {
+//        final List<User> users = userService.readAll();
 //
-//        System.out.println();
+////        How To convert List<User> to List<UserDto>????
 //
-//        final User user = userService.read(uid);
-//
-//        return user != null
-//                ? new ResponseEntity<>(user, HttpStatus.OK)
+//        return users != null &&  !users.isEmpty()
+//                ? new ResponseEntity<>(users, HttpStatus.OK)
 //                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
 //    }
+
+    @GetMapping(value ="/{uid}")
+    public ResponseEntity<User> read(@PathVariable(name = "uid") UUID uid) {
+        final User user = userService.read(uid);
+
+        UserDto userDto = userMapper.entityToDto(user);
+        return userDto != null
+                ? new ResponseEntity(userDto, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
     @PostMapping(value ="/auth")
     public ResponseEntity<?> authorization(@RequestBody UserDto userDto) {

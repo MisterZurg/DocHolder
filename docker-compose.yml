@@ -10,14 +10,6 @@ services:
       - 8081:8081
     restart: always
 
-  docker-backend:
-    build:
-      context: ./backend/docholder/
-      dockerfile: Dockerfile
-    restart: always
-    depends_on: 
-      - docker-nginx
-
   docker-frontend:
     build:
       context: ./frontend/
