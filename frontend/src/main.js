@@ -6,6 +6,23 @@ import index from './components/index'
 import regUser from './components/regUser'
 import loginUser from './components/loginUser'
 import companies from './components/companies'
+import registerTest from './components/registerUserForm'
+//import vuetify from './plugins/vuetify';
+
+import VueMaterial from 'vue-material'
+import 'vue-material/dist/vue-material.min.css'
+import 'vue-material/dist/theme/default-dark.css'
+import mainPage from "@/components/mainPage";
+
+Vue.use(VueMaterial)
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCoffee, faInfoCircle, faUserPlus, faSignInAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faCoffee, faInfoCircle, faUserPlus, faSignInAlt, faSignOutAlt)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 // router
 Vue.use(VueRouter);
@@ -26,7 +43,16 @@ const routes = [
     {
         path: "/companies",
         component: companies
-    }
+    },
+	{
+		path: "/main-page",
+		component: mainPage,
+		children: []
+	},
+	{
+		path: "/test-reg-user",
+		component: registerTest
+	}
 ];
 
 const router = new VueRouter({
@@ -45,6 +71,7 @@ if (token) {
 Vue.config.productionTip = false;
 
 new Vue({
-	router,
-	render: (h) => h(App),
+    router,
+    //vuetify,
+    render: (h) => h(App)
 }).$mount("#app");

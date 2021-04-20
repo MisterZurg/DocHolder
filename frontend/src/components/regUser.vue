@@ -1,38 +1,66 @@
 <template>
 	<div class="main-reguser">
-		<form>
-		<div class="container-reguser">
-			<div class="title-reguser">Регистрация</div>
-			<input type="text" ref="name" placeholder="Имя">
-			<input type="text" ref="surname" placeholder="Фамилия">
-			<input type="text" ref="email" placeholder="E-mail">
-			<input type="password" ref="password" placeholder="Пароль">
-			<input type="password" ref="dubpassword" placeholder="Повторите пароль">
-			<input type="text" ref="number" placeholder="Номер">
-			<div class="gender-reguser">
-				<p>Пол:</p>
-				<input type="radio" name="gender" value="MALE" id="male" ref="male" checked>
-				<label for="male">Мужчина</label>
-				<input type="radio" name="gender" value="FEMALE" id="female">
-				<label for="female">Женщина</label>
-				<!-- <p>фотография</p> -->
-			</div>
+		<!--<form>-->
+        <md-card md-with-hover>
+            <md-ripple>
+                <md-card-header>
+                    <div class="md-title">Sign Up</div>
+                    <div class="md-subhead">Input your data</div>
+                </md-card-header>
 
-			<p class="error">{{errorText}}</p>
+                <md-card-content>
+                    <div class="container-reguser">
+                        <div class="title-reguser">Регистрация</div>
+                        <input type="text" ref="name" placeholder="Имя">
+                        <input type="text" ref="surname" placeholder="Фамилия">
+                        <input type="text" ref="email" placeholder="E-mail">
+                        <input type="password" ref="password" placeholder="Пароль">
+                        <input type="password" ref="dubpassword" placeholder="Повторите пароль">
+                        <input type="text" ref="number" placeholder="Номер">
+                        <div class="gender-reguser">
+                            <p>Пол:</p>
+                            <input type="radio" name="gender" value="MALE" id="male" ref="male" checked>
+                            <label for="male">Мужчина</label>
+                            <input type="radio" name="gender" value="FEMALE" id="female">
+                            <label for="female">Женщина</label>
+                            <!-- <p>фотография</p> -->
+                        </div>
 
-			<button v-on:click="validation">Зарегистрироваться</button>
-		</div>
-		</form>
+                        <p class="error">{{errorText}}</p>
+                        <!--
+                        <button v-on:click="validation">
+                            Зарегистрироваться
+                            <v-icon>mdi-check-circle</v-icon>
+                        </button>
+                        -->
+                        <md-card-actions>
+                            <md-button v-on:click="validation">
+                                Register
+                            </md-button>
+                        </md-card-actions>
+                    </div>
+                </md-card-content>
+
+
+            </md-ripple>
+        </md-card>
+
+
+
+            <bottomHomeBar/>
+		<!--</form>>-->
 	</div>
+
 </template>
 
 <script>
 
 // const axios = require('axios');
 document.title = "Регистрация";
-
+import bottomHomeBar from './bottom-home-bar'
 export default {
 	name: 'reguser',
+    components : {bottomHomeBar},
 	props: {},
 	data() {
 		return{
@@ -164,7 +192,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-
+/*
 .main-reguser{
 	margin: 0 auto;
 	width: 500px;
@@ -205,6 +233,6 @@ export default {
 	text-align: center;
 	color: #B00020;
 }
-
+*/
 
 </style>
