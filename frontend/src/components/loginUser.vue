@@ -86,7 +86,7 @@ export default {
 					}
 				})
 				.then(function(response) {
-					// console.log(response.data);
+					console.log(response.data);
 					
 					// decrypt JWT payload to simple json with UTF-8 support
 					var token = response.data.split('.');

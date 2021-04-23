@@ -6,7 +6,7 @@ import com.docholder.model.UserMapper;
 import com.docholder.model.UserRole;
 import com.docholder.service.UserService;
 import com.docholder.utilities.Encrypt;
-import com.docholder.utilities.GenerateJwt;
+import com.docholder.utilities.Jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ import java.util.*;
 public class UserController {
     private final UserMapper userMapper;
     private final UserService userService;
-    private final GenerateJwt generateJwt;
+    private final Jwt jwt;
     private final Encrypt encrypt;
 
     @PostMapping
@@ -73,7 +73,7 @@ public class UserController {
         if(person == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         // generate JWT token
-        String token = generateJwt.generateTokenByUser( userMapper.entityToDto(person) );
+        String token = jwt.generateTokenByUser( userMapper.entityToDto(person) );
 
         // return response
         return new ResponseEntity<>(token, HttpStatus.OK);
