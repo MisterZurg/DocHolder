@@ -38,7 +38,6 @@ public class DocumentController {
     private final DocumentMapper documentMapper;
 
     //    public ResponseEntity<?> putDocument(@RequestParam UUID id, @RequestPart("file") MultipartFile file){
-    @ApiOperation(value = "OAOAOAOAOAO")
     @PreAuthorize("hasPermission(new com.docholder.utilities.DocumentSecurityTransfer(#documentDto, #token, null), 'putDocument')")
     @PostMapping(value = "/upload", consumes = {
             MediaType.TEXT_PLAIN_VALUE,
