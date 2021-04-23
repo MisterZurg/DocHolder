@@ -10,6 +10,18 @@ services:
       - 8081:8081
     restart: always
 
+  docker-ftp:
+    build:
+      context: ./ftp/
+      dockerfile: Dockerfile
+    ports:
+      - "21:21"
+      - "21000-21010:21000-21010"
+    environment:
+      ADDRESS: localhost
+      USERS: "someuser|Qwerty123!"
+    restart: always
+
   docker-frontend:
     build:
       context: ./frontend/

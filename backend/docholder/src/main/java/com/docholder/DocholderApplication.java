@@ -3,6 +3,8 @@ package com.docholder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.net.URLConnection;
+
 
 @SpringBootApplication
 public class DocholderApplication {
