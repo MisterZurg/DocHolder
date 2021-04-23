@@ -1,12 +1,39 @@
 package com.docholder.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
+import javax.persistence.*;
+import java.util.UUID;
+
 @Data
-public class Document {     // need 2 decide name File
-    private Integer id;
+@Entity
+@Table(name = "documents")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Document {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+
+    @Column(name = "name")
     private String name;
-    // TODO : private ... fileRole (documentRole)
-    private Integer companyID;
-    private Integer userID; // author
+
+    @Column(name = "filename")
+    private String filename;
+
+    @Column(name = "company_id")
+    private String company_id;
+
+    @Column(name = "user_id")
+    private String user_id;
+
+    @Column(name = "role_modify")
+    @Enumerated(EnumType.STRING)
+    private UserRole role_modify;
+
+    @Column(name = "role_read")
+    @Enumerated(EnumType.STRING)
+    private UserRole role_read;
 }
