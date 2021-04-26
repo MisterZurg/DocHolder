@@ -6,7 +6,7 @@ import com.docholder.model.UserMapper;
 import com.docholder.model.UserRole;
 import com.docholder.service.UserService;
 import com.docholder.utilities.Encrypt;
-import com.docholder.utilities.GenerateJwt;
+import com.docholder.utilities.Jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ import java.util.*;
 public class UserController {
     private final UserMapper userMapper;
     private final UserService userService;
-    private final GenerateJwt generateJwt;
+    private final Jwt jwt;
     private final Encrypt encrypt;
 
     @PostMapping
@@ -39,33 +39,26 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<List<User>> read() {
-        final List<User> users = userService.readAll();
-
-//        How To convert List<User> to List<UserDto>????
-//                  shit code
-//        List<UserDto> usersDto = null;
-//        users.stream().forEach(user -> {
-//            usersDto.add( userMapper.entityToDto(user) );
-//        });
-
-        return users != null &&  !users.isEmpty()
-                ? new ResponseEntity<>(users, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-//    @GetMapping(value ="/{uid}")
-//    public ResponseEntity<User> read(@PathVariable(name = "uid") UUID uid) {
+//    @GetMapping
+//    public ResponseEntity<List<User>> read() {
+//        final List<User> users = userService.readAll();
 //
-//        System.out.println();
+////        How To convert List<User> to List<UserDto>????
 //
-//        final User user = userService.read(uid);
-//
-//        return user != null
-//                ? new ResponseEntity<>(user, HttpStatus.OK)
+//        return users != null &&  !users.isEmpty()
+//                ? new ResponseEntity<>(users, HttpStatus.OK)
 //                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
 //    }
+
+    @GetMapping(value ="/{uid}")
+    public ResponseEntity<User> read(@PathVariable(name = "uid") UUID uid) {
+        final User user = userService.read(uid);
+
+        UserDto userDto = userMapper.entityToDto(user);
+        return userDto != null
+                ? new ResponseEntity(userDto, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
     @PostMapping(value ="/auth")
     public ResponseEntity<?> authorization(@RequestBody UserDto userDto) {
@@ -80,7 +73,7 @@ public class UserController {
         if(person == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         // generate JWT token
-        String token = generateJwt.generateTokenByUser( userMapper.entityToDto(person) );
+        String token = jwt.generateTokenByUser( userMapper.entityToDto(person) );
 
         // return response
         return new ResponseEntity<>(token, HttpStatus.OK);
