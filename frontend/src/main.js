@@ -6,7 +6,7 @@ import index from './components/index'
 import regUser from './components/regUser'
 import loginUser from './components/loginUser'
 import companies from './components/companies'
-import registerTest from './components/registerUserForm'
+import testOnly from './components/testOnly'
 //import vuetify from './plugins/vuetify';
 
 import VueMaterial from 'vue-material'
@@ -23,6 +23,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faCoffee, faInfoCircle, faUserPlus, faSignInAlt, faSignOutAlt)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+// register jw pagination component globally
+import JwPagination from 'jw-vue-pagination';
+Vue.component('jw-pagination', JwPagination);
 
 // router
 Vue.use(VueRouter);
@@ -50,8 +54,8 @@ const routes = [
 		children: []
 	},
 	{
-		path: "/test-reg-user",
-		component: registerTest
+		path: "/test",
+		component: testOnly
 	}
 ];
 

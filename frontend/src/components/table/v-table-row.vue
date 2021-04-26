@@ -1,8 +1,8 @@
 <template>
     <div class="v-table-row">
-        <div class="row row__name">{{row_data.name}}</div>
-        <div class="row row__description">{{row_data.description}}</div>
-        <div class="row row__logo">{{row_data.logotype}}</div>
+        <md-table-cell>{{row_data.name}}</md-table-cell>
+        <md-table-cell>{{row_data.description}}</md-table-cell>
+        <md-table-cell>{{row_data.logotype}}</md-table-cell>
     </div>
 </template>
 

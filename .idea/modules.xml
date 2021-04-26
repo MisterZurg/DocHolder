@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/DocHolder.iml" filepath="$PROJECT_DIR$/.idea/DocHolder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/backend/docholder/docholder.iml" filepath="$PROJECT_DIR$/backend/docholder/docholder.iml" />
     </modules>
   </component>
 </project>

@@ -20,15 +20,38 @@
                  @click="pageClick(page)"
             >{{ page }}
             </div>
+
+            <md-button
+                class="md-icon-button"
+                :disabled="pageNumber === 1"
+                @click="prevPage">
+                <md-icon>keyboard_arrow_left</md-icon>
+            </md-button>
+
+            <md-button
+                class="md-icon-button"
+                :disabled="pageNumber >= pages"
+                @click="nextPage">
+                <md-icon>keyboard_arrow_right</md-icon>
+            </md-button>
         </div>
+
     </div>
 </template>
 
 <script>
 
 import vTableRow from './v-table-row'
-
-export default {
+/*
+<md-table-pagination
+class="table-pagination"
+md-limit=10
+md-page=1
+md-total=30
+:class="{'md-table-pagination-next': @click='prevPage'}"
+    >
+    </md-table-pagination>
+*/export default {
     name: "v-table",
     components: {
         vTableRow
@@ -60,6 +83,12 @@ export default {
     methods: {
         pageClick(page) {
             this.pageNumber = page;
+        },
+        nextPage(){
+            this.pageNumber++;
+        },
+        prevPage(){
+            this.pageNumber--;
         }
     }
 }
