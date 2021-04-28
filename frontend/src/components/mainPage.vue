@@ -1,86 +1,179 @@
 <template>
     <div>
-        <md-table-container>
-            <md-table v-model="searched" md-sort="name" md-sort-order="asc" md-card md-fixed-header>
-                <md-table-toolbar>
-                    <md-field md-clearable class="md-toolbar-section-end">
-                        <md-input placeholder="Search by name..." v-model="search" @input="searchOnTable" />
-                    </md-field>
-                </md-table-toolbar>
+        <md-table v-model="searched" md-sort="name" md-sort-order="asc" md-card md-fixed-header>
+            <md-table-toolbar>
+                <div class="md-toolbar-section-start">
+                    <h1 class="md-title">Companies</h1>
+                </div>
+            </md-table-toolbar>
 
-                <md-table-empty-state
-                    md-label="No companies found"
-                    :md-description="`No companies found for this '${search}' query. Try a different search term or create a new company.`">
-                    <!-- TODO Add router link -->
-                    <md-button class="md-primary md-raised" @click="newUser">Create New Сompany</md-button>
-                </md-table-empty-state>
+            <md-table-row slot="md-table-row" slot-scope="{ item }">
+                <md-table-cell md-label="ID" md-sort-by="id" md-numeric>{{ item.id }}</md-table-cell>
+                <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
+                <md-table-cell md-label="Description" md-sort-by="description">{{ item.description }}</md-table-cell>
+            </md-table-row>
 
-                <md-table-row slot="md-table-row" slot-scope="{ item }">
-                    <md-table-cell md-label="ID" md-sort-by="id" md-numeric>{{ item.id }}</md-table-cell>
-                    <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
-                    <md-table-cell md-label="Description" md-sort-by="title">{{ item.description }}</md-table-cell>
-                </md-table-row>
-            </md-table>
-            <md-table-pagination class="table-pagination" md-limit=10 md-page=1 md-total=30>
+        </md-table>
+        <div class="v-table__pagination">
+            <div class="page"
+                 v-for="page in pageColumn"
+                 :key="page"
+                 :class="{'page_selected': page === pageNumber}"
+                 @click="pageClick(page)"
+            >{{ page }}
+            </div>
 
-            </md-table-pagination>
+            <md-button
+                class="md-icon-button"
+                :disabled="pageNumber === 1"
+                @click="prevPage">
+                <md-icon>keyboard_arrow_left</md-icon>
+            </md-button>
 
-        </md-table-container>
+            <md-button
+                class="md-icon-button"
+                :disabled="pageNumber >= pageColumn"
+                @click="nextPage">
+                <md-icon>keyboard_arrow_right</md-icon>
+            </md-button>
+        </div>
     </div>
 </template>
 
 <script>
-const toLower = text => {
-    return text.toString().toLowerCase()
-}
-
-const searchByName = (items, term) => {
-    if (term) {
-        return items.filter(item => toLower(item.name).includes(toLower(term)))
-    }
-
-    return items
-}
-
 export default {
     name: 'TableSearch',
     data: () => ({
         search: null,
         searched: [],
-        users: createFakeData()
+        companiesPerPage: 4,
+        pageNumber: 1,
+        pageColumn: 1,
+        companies_data: []
+
     }),
+    mounted: function () {
+        this.companies_data = this.getCompanies();
+        this.pageColumn = this.getPageColumn();
+        this.searched = this.companies_data;
+    },
     methods: {
-        newUser () {
-            window.alert('Noop')
+        getCompanies() {
+            let data = [];
+            this.$http(
+                {
+                    method: 'get',
+                    url: 'http://localhost:8082/company?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1),
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then(function (response) {
+                    // console.log(response.data.content);
+                    let content = response.data.content;
+                    for (let i = 0; i < content.length; i++) {
+                        data.push({
+                            id: i,
+                            name: content[i].name,
+                            description: content[i].description,
+                            logotype: content[i].logo
+                        });
+                    }
+                    return data;
+                })
+                .catch(function (error) {
+                    console.log("catch error : " + error);
+                    return error;
+                });
+            return data;
         },
-        searchOnTable () {
-            this.searched = searchByName(this.users, this.search)
+        getPageColumn() {
+            var query = this.$http(
+                {
+                    method: 'get',
+                    url: 'http://localhost:8082/company/count',
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                    }
+                })
+                .then(function (response) {
+                    let column = response.data;
+                    return Math.ceil(column);
+                })
+                .catch(function (error) {
+                    console.log("catch error : " + error);
+                    // return error;
+                });
+            query.then((response) => {
+                // if error happened
+                if (response.status != undefined) {
+                    console.log(response);
+                    let status = response.response.status;
+                    if (status == 404) {
+                        this.errorText = "Компаний не существует";
+                    } else {
+                        this.errorText = "Произошла внутренняя ошибка. Попробуйте позже";
+                    }
+                    return;
+                }
+                this.pageColumn = Math.ceil(response / this.companiesPerPage);
+            });
+            return 1;
+        },
+        pageClick(page) {
+            this.pageNumber = page;
+            this.companies_data = this.getCompanies();
+            this.searched = this.companies_data;
+        },
+        nextPage() {
+            this.pageNumber++;
+            this.companies_data = this.getCompanies();
+            this.searched = this.companies_data;
+
+        },
+        prevPage() {
+            this.pageNumber--;
+            this.companies_data = this.getCompanies();
+            this.searched = this.companies_data;
+
         }
     },
-    created () {
-        this.searched = this.users
-    }
-}
 
-function createFakeData() {
-    let data = [];
-    for (let i = 0; i < 100; i++) {
-        data.push({
-            id: i,
-            name: "Company #" + i,
-            description: "bvlah blah",
-            logotype: "in dev"
-        });
-    }
-    return data;
 }
-
 </script>
 
 <style lang="scss" scoped>
+.md-table{
+    min-height: 550px;
+}
+
+.md-table-row {
+    height: 100px !important;
+}
+
 .md-field {
     max-width: 300px;
-    // height: 500px;
+}
+
+.v-table__pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 30px;
+    margin-right: 5px;
+}
+
+.page {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.page:hover {
+    background: #42b983;
+}
+
+.page_selected {
+    background: #2c3e50;
 }
 
 </style>
