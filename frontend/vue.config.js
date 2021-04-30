@@ -1,6 +1,11 @@
 module.exports = {
-	runtimeCompiler: true,
+  runtimeCompiler: true,
+
   devServer: {
     port: 4200
-  }
+  },
+
+  transpileDependencies: [
+    'vuetify'
+  ]
 }
