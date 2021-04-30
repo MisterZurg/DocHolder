@@ -6,7 +6,8 @@ import index from './components/index'
 import regUser from './components/regUser'
 import loginUser from './components/loginUser'
 import companies from './components/companies'
-import testOnly from './components/testOnly'
+import company from './components/company'
+// import testOnly from './components/testOnly'
 //import vuetify from './plugins/vuetify';
 
 import VueMaterial from 'vue-material'
@@ -54,8 +55,8 @@ const routes = [
 		children: []
 	},
 	{
-		path: "/test",
-		component: testOnly
+		path: "/company",
+		component: company
 	}
 ];
 

@@ -35,19 +35,23 @@ public class CompanyController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody CompanyDto companyDto, @RequestParam String token) {
         Company company = companyMapper.dtoToEntity(companyDto);
-//        System.out.println(company);
-//        System.out.println(token);
-        company.setStatus(CompanyStatus.DRAFT);
-        companyService.create(company);
+//            System.out.println(company);
+//            System.out.println(token);
 
         // Will move to user service
         Map<String, Object> userdata = jwt.getData(token);
         User user = userService.read( UUID.fromString(userdata.get("id").toString()));
-        if(!(user.getCompany_id() == null))
+        if(!(user.getCompany_id() == null)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        company.setStatus(CompanyStatus.DRAFT);
+        companyService.create(company);
+
         user.setCompany_id(company.getId());
         user.setRole(UserRole.DIRECTOR);
         userService.update(user, user.getId());
+
 
         return new ResponseEntity<>(HttpStatus.CREATED);
 //        return new ResponseEntity<>(HttpStatus.OK);
