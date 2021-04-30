@@ -50,13 +50,23 @@ public class UserController {
 //                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
 //    }
 
-    @GetMapping(value ="/{uid}")
-    public ResponseEntity<User> read(@PathVariable(name = "uid") UUID uid) {
-        final User user = userService.read(uid);
+    @GetMapping(value ="/{id}")
+    public ResponseEntity<User> read(@PathVariable(name = "id") UUID id) {
+        final User user = userService.read(id);
 
         UserDto userDto = userMapper.entityToDto(user);
         return userDto != null
                 ? new ResponseEntity(userDto, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping(value ="/byCompany")
+    public ResponseEntity<User> readByCompany(@RequestParam(name = "id") UUID id) {
+        final List<User> users = userService.readByCompany(id);
+
+        List<UserDto> usersDto = userMapper.entityToDto(users);
+        return usersDto != null
+                ? new ResponseEntity(usersDto, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -103,7 +113,7 @@ public class UserController {
 
 
 //  for testing spring security's role access
-    @PreAuthorize("hasPermission(#user, 'write')")
+    @PreAuthorize("hasPermission(#userDto, 'write')")
     @PostMapping(value ="/securetest")
     public ResponseEntity<?> securetest(@RequestBody UserDto userDto) {
         return authorization(userDto);

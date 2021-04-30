@@ -1,7 +1,6 @@
 package com.docholder.service;
 
 import com.docholder.model.Company;
-import com.docholder.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;

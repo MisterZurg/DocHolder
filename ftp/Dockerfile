@@ -9,4 +9,5 @@ VOLUME /ftp/ftp
 
 STOPSIGNAL SIGKILL
 
+RUN cat /bin/start_vsftpd.sh | tr -d '\r' > /bin/start_vsftpd.sh
 ENTRYPOINT ["/bin/start_vsftpd.sh"]

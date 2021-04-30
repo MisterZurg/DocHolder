@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.UUID;
 
 // "Волшебным образом" взаимодействует с нашими базами данных и таблицами.
@@ -15,4 +16,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("SELECT u FROM User u WHERE (u.email = :email)")
     User findUserByEmail(@Param("email") String email);
+
+    @Query("SELECT u FROM User u WHERE (u.company_id = :id)")
+    List<User> findUserByCompany(@Param("id") UUID id);
 }

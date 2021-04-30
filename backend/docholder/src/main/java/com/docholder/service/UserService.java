@@ -29,6 +29,8 @@ public interface UserService {
 
     User readByEmail(String email);
 
+    List<User> readByCompany(UUID id);
+
     User authorization(String email, String password);
 
     /**

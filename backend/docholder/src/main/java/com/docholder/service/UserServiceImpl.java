@@ -24,20 +24,27 @@ public class UserServiceImpl implements UserService{
         return userRepository.findAll();
     }
 
-    // @Override
+    @Override
     public User read(UUID id) {
         return userRepository.getOne(id);
     }
 
+    @Override
     public User readByEmail(String email){
         return userRepository.findUserByEmail(email);
     }
 
+    @Override
+    public List<User> readByCompany(UUID id){
+        return userRepository.findUserByCompany(id);
+    }
+
+    @Override
     public User authorization(String email, String password) {
         return userRepository.findUser(email, password);
     }
 
-    // @Override
+    @Override
     public boolean update(User user, UUID id) {
         if (userRepository.existsById(id)){
             user.setId(id);
@@ -47,7 +54,7 @@ public class UserServiceImpl implements UserService{
         return false;
     }
 
-    // @Override
+    @Override
     public boolean delete(UUID id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);

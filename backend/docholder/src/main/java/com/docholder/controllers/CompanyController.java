@@ -1,10 +1,9 @@
 package com.docholder.controllers;
 
-import com.docholder.model.Company;
-import com.docholder.model.CompanyDto;
-import com.docholder.model.CompanyMapper;
-import com.docholder.model.CompanyStatus;
+import com.docholder.model.*;
 import com.docholder.service.CompanyService;
+import com.docholder.service.UserService;
+import com.docholder.utilities.Jwt;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +15,11 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/company")
@@ -30,13 +28,29 @@ public class CompanyController {
 
     private final CompanyService companyService;
     private final CompanyMapper companyMapper;
+    private final Jwt jwt;
+    private final UserService userService;
 
+    @PreAuthorize("hasPermission(#token, 'createCompany')")
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody CompanyDto companyDto) {
+    public ResponseEntity<?> create(@RequestBody CompanyDto companyDto, @RequestParam String token) {
         Company company = companyMapper.dtoToEntity(companyDto);
+//        System.out.println(company);
+//        System.out.println(token);
         company.setStatus(CompanyStatus.DRAFT);
         companyService.create(company);
+
+        // Will move to user service
+        Map<String, Object> userdata = jwt.getData(token);
+        User user = userService.read( UUID.fromString(userdata.get("id").toString()));
+        if(!(user.getCompany_id() == null))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        user.setCompany_id(company.getId());
+        user.setRole(UserRole.DIRECTOR);
+        userService.update(user, user.getId());
+
         return new ResponseEntity<>(HttpStatus.CREATED);
+//        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(value ="/count")
@@ -44,8 +58,8 @@ public class CompanyController {
         return new ResponseEntity(companyService.count(), HttpStatus.OK);
     }
 
-    @GetMapping(value ="/{id}}")
-    public ResponseEntity<List<Company>> read(@PathVariable(name = "id") UUID id) {
+    @GetMapping(value ="/read")
+    public ResponseEntity<List<Company>> read(@RequestParam(name = "id") UUID id) {
         final Company company = companyService.read(id);
 
         return company != null
@@ -78,13 +92,18 @@ public class CompanyController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+//    @PreAuthorize("hasPermission(#token, 'updateCompany')")
     @PutMapping
-    public ResponseEntity<?> update(@RequestBody CompanyDto companyDto) {
+    public ResponseEntity<?> update(@RequestBody CompanyDto companyDto, @RequestParam String token) {
+//        System.out.println(companyDto);
         Company company = companyMapper.dtoToEntity(companyDto);
+        company.setStatus(CompanyStatus.READY_TO_VERIFY);
+//        System.out.println(company);
         final boolean updated = companyService.update(company, company.getId());
 
+//        boolean updated = true;
         return updated
-                ? new ResponseEntity<>(HttpStatus.OK)
+                ? new ResponseEntity<>(companyMapper.entityToDto(company), HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 

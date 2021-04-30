@@ -38,10 +38,20 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             return false;
         }
 
+        if(permission.toString().equals("createCompany")){
+            try {
+                return createCompanyPermission( (String) obj);
+            } catch (Exception e){
+                System.out.println("catch error during hasPermission() at createCompany");
+                return false;
+            }
+        }
+
         if(permission.toString().equals("putDocument") || permission.toString().equals("updateDocument")){
             try {
                 return modifyDocumentPermission( (DocumentSecurityTransfer) obj);
             } catch (Exception e){
+//                e.printStackTrace();
                 System.out.println("catch error during hasPermission() at modifyDocument");
                 return false;
             }
@@ -60,6 +70,11 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 //        if (user.getRole() != UserRole.ADMINISTRATOR) return false;
 
         return false;
+    }
+
+    //    if user role equals document modify role or DIRECTOR or ADMINISTRATOR then return true
+    private boolean createCompanyPermission(String token){
+        return jwt.isValid(token);
     }
 
 //    if user role equals document modify role or DIRECTOR or ADMINISTRATOR then return true
