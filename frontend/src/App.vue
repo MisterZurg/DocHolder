@@ -82,8 +82,8 @@
 							</md-card-content>
 	
 						<md-card-actions>
-							<md-button v-on:click="createCompany();">Create company</md-button>
-							<md-button v-on:click="moveToCompany();">Go to company</md-button>
+							<md-button @click="createCompany();">Create company</md-button>
+							<md-button @click="moveToCompany();">Go to company</md-button>
 							<md-button @click="logout();">logout</md-button>
 						</md-card-actions>
 					</md-ripple>
@@ -176,15 +176,19 @@ export default {
 					}
 
 					if(status == 201){
-						alert("Company was successfully created");
+						alert("Company was successfully created. Please relogin");
 						// later we should post new authorization automatically!!!
-						localStorage.clear();
+						this.logout();
 					}
 
 				});
 			}
 		},
 		moveToCompany: function(){
+			if(localStorage.company_id == "undefined" || localStorage.company_id == undefined){
+				alert("You are not employee of any company. Get job or create company!");
+				return;
+			}
 			this.$router.push('/company?id='+localStorage.getItem('company_id')).catch(()=>{});
 		},
 

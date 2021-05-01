@@ -450,7 +450,6 @@ export default {
 					"id": localStorage.company_id,
 					"name": this.$refs.changeCompanyNameInput.$el.value,
 					"description": this.$refs.changeDescriptionInput.$el.value,
-
 				},
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
