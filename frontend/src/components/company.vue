@@ -28,6 +28,7 @@
 			</md-tab>
 
 			<md-tab id="tab-pages" md-label="Документы">
+				<md-button class="md-primary md-raised" @click="showUploadDocument = true">Upload document</md-button>
 				<div class="md-title">Директорат</div>
 				<div class="document-container">
 					<div class="document md-elevation-3" v-for="document in documentsDirector" :key="document.id">
@@ -38,7 +39,7 @@
 								<font-awesome-icon icon="eye" title="Запросить" />
 							</div>
 							<div class="action download">
-								<font-awesome-icon icon="download" title="Скачать" />
+								<font-awesome-icon icon="download" title="Скачать" @click="downloadDocument(document.filename)" />
 							</div>
 							<div class="action edit">
 								<font-awesome-icon icon="pen-square" title="Редактировать" />
@@ -112,6 +113,27 @@
 						</div>
 					</div>
 				</div>
+
+				<md-dialog :md-active.sync="showUploadDocument">
+					<md-dialog-title>Upload document</md-dialog-title>
+					<md-dialog-content>
+						<md-field>
+							<label>Document</label>
+							<md-file v-model="newDocumentFile" @md-change="setDocumentBinary($event)" />
+						</md-field>
+						<md-field>
+							<label>Document name</label>
+							<md-input ref="newDocumentName"></md-input>
+							<!-- <span class="md-helper-text">Document Name</span> -->
+						</md-field>
+						<md-checkbox v-model="newDocumentPublic">Public</md-checkbox>
+					</md-dialog-content>
+					<md-dialog-actions>
+						<md-button class="md-primary" @click="closeUploadDocument();">Close</md-button>
+						<md-button class="md-primary" @click="uploadDocument();">Upload</md-button>
+					</md-dialog-actions>
+				</md-dialog>
+
 			</md-tab>
 
 			<md-tab id="tab-posts" md-label="Сотрудники">
@@ -161,7 +183,12 @@ export default {
 			employees: [],
 			documents: [],
 
-			is_editing: false
+			is_editing: false,
+
+			showUploadDocument: false,
+			newDocumentPublic: false,
+			newDocumentFile: null,
+			documentBinary: null,
 		}
 	},
 	computed: {
@@ -209,10 +236,117 @@ export default {
 			this.getEmployees();
 			this.getDocuments();
 		}
+		// let text = JSON.stringify({hello:'example'});
+		// this.downloadAsFile(text);
 	},
 	methods: {
+		downloadAsFile(data, filename) {
+			let a = document.createElement("a");
+			let file = new Blob([data]);
+			// console.log(data);
+
+			a.href = URL.createObjectURL(file);
+			a.download = filename;
+			a.click();
+		},
+
+		downloadDocument(filename){
+			var query = this.$http(
+			{
+				method: 'post',
+				url: 'http://localhost:8082/document/download?id='+'e5ce364a-8e66-4a0d-9031-0b67086ab5db'+'&token='+localStorage.token,
+				responseType: 'blob'
+			})
+			.then(function(response) {return response;})
+			.catch(function(error) {return error.response;});
+
+			query.then((response) => {
+				let status = response.status;
+
+				if(status == 404){
+					// console.log("catch error 404");
+					return;
+				}
+					
+				if(status == 200){
+					let data = response.data;
+					console.log(response);
+					console.log(response.data);
+					this.downloadAsFile(data, filename);
+				}
+			});
+		},
+		setDocumentBinary(evt) {
+			this.documentBinary = evt[0];
+		},
+		uploadDocument(){
+			let name = this.$refs.newDocumentName.$el.value;
+			if(this.documentBinary == null || name == ""){
+				console.log(this.documentBinary);
+				console.log(name);
+				alert("The inputs mustn't be empty");
+				return;
+			}
+			if(localStorage.token == undefined){
+				alert("Don't try hack us");
+				return;
+			}
+
+			let roleRead = localStorage.role;
+			if(this.newDocumentPublic){
+				roleRead = "REGULAR_UNEMPLOYED";
+			}
+
+			let formData = new FormData();
+			formData.append('file', this.documentBinary);
+			formData.append('token', localStorage.token);
+			var documentDto = {
+				"name": name,
+				"company_id": localStorage.company_id,
+				"user_id": localStorage.id,
+				"role_modify": localStorage.role,
+				"role_read": roleRead
+			};
+			documentDto = new Blob([JSON.stringify(documentDto)], {
+				type: 'application/json'
+			});
+			formData.append('documentDto', documentDto);
+			var query = this.$http.post( 'http://localhost:8082/document/upload',
+				formData,
+				{
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					}
+				}
+			).then(function(response) {return response;})
+			.catch(function(error) {return error.response;});
+
+			query.then((response) => {
+				let status = response.status;
+
+				if(status == 409){
+					// console.log("catch error 404");
+					return;
+				}
+				
+				if(status == 200){
+					// let data = response.data;
+					
+					this.closeUploadDocument();
+					this.getDocuments();
+					alert("Document was successfully uploaded");
+				}
+			});
+		},
+		closeUploadDocument(){
+			this.showUploadDocument = false;
+			this.newDocumentName = null;
+			this.newDocumentFile = null;
+			this.documentBinary = null;
+		},
+
 		getCompany(){
-			// test 
+			// test ! then delete!
 			if(localStorage.token == undefined) return;
 
 			var query = this.$http(
@@ -332,9 +466,10 @@ export default {
 					alert("The company information hasn't been changed. Maybe your data is'n valid");
 					return;
 				}else if(status == 200){
-					let data = response.data;
-					this.companyName = data.name;
-					this.description = data.description;
+					// let data = response.data;
+					// this.companyName = data.name;
+					// this.description = data.description;
+					this.getCompany();
 					alert("The company information has been changed successfully");
 				}else{
 					console.log("catch unresolve error:"+status);

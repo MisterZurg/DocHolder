@@ -6,8 +6,8 @@ import index from './components/index'
 import regUser from './components/regUser'
 import loginUser from './components/loginUser'
 import companies from './components/companies'
+import registerTest from './components/registerUserForm'
 import company from './components/company'
-// import testOnly from './components/testOnly'
 //import vuetify from './plugins/vuetify';
 
 import VueMaterial from 'vue-material'
@@ -18,16 +18,12 @@ import mainPage from "@/components/mainPage";
 Vue.use(VueMaterial)
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCoffee, faInfoCircle, faUserPlus, faSignInAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faCoffee, faInfoCircle, faUserPlus, faSignInAlt, faSignOutAlt, faPenSquare, faDownload, faTrash, faEye } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faCoffee, faInfoCircle, faUserPlus, faSignInAlt, faSignOutAlt)
+library.add(faCoffee, faInfoCircle, faUserPlus, faSignInAlt, faSignOutAlt, faPenSquare, faDownload, faTrash, faEye)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
-
-// register jw pagination component globally
-import JwPagination from 'jw-vue-pagination';
-Vue.component('jw-pagination', JwPagination);
 
 // router
 Vue.use(VueRouter);
@@ -53,6 +49,10 @@ const routes = [
 		path: "/main-page",
 		component: mainPage,
 		children: []
+	},
+	{
+		path: "/test-reg-user",
+		component: registerTest
 	},
 	{
 		path: "/company",

@@ -57,7 +57,7 @@
 		<!-- <bottom-bar/>
 	</div>-->
 	<div class="page-container">
-		<md-app md-waterfall md-mode="overlap">
+		<md-app md-waterfall md-mode="overlap" class="waterfall">
 			<md-app-toolbar class="md-primary md-large">
 				<div class="md-toolbar-row">
 					<md-button class="md-icon-button" @click="menuVisible = !menuVisible">
@@ -73,15 +73,31 @@
 					Navigation
 				</md-toolbar>
 
+				<md-card md-with-hover ref="profile">
+					<md-ripple>
+	
+							<md-card-content>
+								<md-avatar class="md-avatar-icon md-primary">{{name[0]}}</md-avatar>
+								<span class="md-subheading profile-name">{{name}} {{surname}}</span>
+							</md-card-content>
+	
+						<md-card-actions>
+							<md-button v-on:click="createCompany();">Create company</md-button>
+							<md-button v-on:click="moveToCompany();">Go to company</md-button>
+							<md-button @click="logout();">logout</md-button>
+						</md-card-actions>
+					</md-ripple>
+				</md-card>	
+
 				<md-list>
-					<md-list-item>
+					<md-list-item ref="buttonRegistration">
 						<font-awesome-icon icon="user-plus" />
 						<router-link to='/reg-user'>
 							<span class="md-list-item-text">Sign Up</span>
 						</router-link>
 					</md-list-item>
 
-					<md-list-item>
+					<md-list-item ref="buttonLogin">
 						<font-awesome-icon icon="sign-in-alt" />
 						<router-link to='/login-user'>
 							<span class="md-list-item-text">Sign In</span>
@@ -96,8 +112,6 @@
 					</md-list-item>
 				</md-list>
 
-				<md-button v-on:click="createCompany();">Создать компанию</md-button>
-				<md-button v-on:click="moveToCompany();">Перейти в компанию</md-button>
 			</md-app-drawer>
 
 			<md-app-content>
@@ -113,7 +127,9 @@
 export default {
 	name: 'App',
 	data: () => ({
-		menuVisible: false
+		menuVisible: false,
+		name: "",
+		surname: ""
 	}),
 	// data() {
 	//     return{
@@ -160,7 +176,7 @@ export default {
 					}
 
 					if(status == 201){
-						console.log("created");
+						alert("Company was successfully created");
 						// later we should post new authorization automatically!!!
 						localStorage.clear();
 					}
@@ -171,10 +187,6 @@ export default {
 		moveToCompany: function(){
 			this.$router.push('/company?id='+localStorage.getItem('company_id')).catch(()=>{});
 		},
-
-
-
-
 
 		// is user authorized
 		login: function (){
@@ -188,15 +200,18 @@ export default {
 				// change header style
 				this.name = localStorage.getItem('name');
 				this.surname = localStorage.getItem('surname');
-				this.$refs.headerAuthorization.style.display = "none";
-				this.$refs.headerAccount.style.display = "flex";
+				
+				this.$refs.profile.$el.style.display = "block";
+				this.$refs.buttonRegistration.style.display = "none";
+				this.$refs.buttonLogin.style.display = "none";
 			}
 		},
 		// logout user if logout button had clicked or JWT expired
 		logout: function (){
 			localStorage.clear();
-			this.$refs.headerAuthorization.style.display = "flex";
-			this.$refs.headerAccount.style.display = "none";
+			this.$refs.profile.$el.style.display = "none";
+			this.$refs.buttonRegistration.style.display = "block";
+			this.$refs.buttonLogin.style.display = "block";
 			this.$router.push('/').catch(()=>{});
 		}
 	}
@@ -204,7 +219,18 @@ export default {
 </script>
 
 <style>
+.md-app-toolbar{
+	background-color: #1C305C !important;
+}
+.md-layout-column{
+	background-color: #E8EAF6 !important;
+}
+.waterfall{
+	min-height: 100vh;
+}
 
-
+.profile-name{
+	padding-left: 15px;
+}
 
 </style>

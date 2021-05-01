@@ -45,20 +45,21 @@ public class DocumentController {
             MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> putDocument(
             @RequestPart String token,
-            @ApiParam(hidden = false) @RequestPart DocumentDto documentDto,
+            @ApiParam(hidden = false) @RequestPart("documentDto") DocumentDto documentDto,
             @RequestPart("file") MultipartFile file
     ){
         Document document = documentMapper.dtoToEntity(documentDto);
         boolean is_uploaded = documentService.putDocument(document, file);
         return is_uploaded
                 ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                : new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     @PreAuthorize("hasPermission(new com.docholder.utilities.DocumentSecurityTransfer(null, #token, #id), 'readDocument')")
     @PostMapping(value = "/download")
     public ResponseEntity<?> getDocument(@RequestParam UUID id, @RequestParam String token){
         byte[] bytes = documentService.getDocument(id);
+
         return bytes.length != 0
                 ? new ResponseEntity<>(bytes, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);

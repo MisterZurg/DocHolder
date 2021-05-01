@@ -108,7 +108,8 @@
 document.title = "Home Page";
 
 export default {
-    name: 'index',
+    name: 'ThemeColors',
+    // name: 'index',
     props: {},
     data() {
         return {}
@@ -125,12 +126,8 @@ export default {
 npm install
 npm run serve
 -->
-<style>
-/*
-Color Palette for Bright Theme
-https://colorhunt.co/palette/226680
-fcf8ec  /   d0e8f2  /   79a3b1  /   456268
- */
+<style lang="scss" scoped>
+
 body {
     background: #fcf8ec;
 }

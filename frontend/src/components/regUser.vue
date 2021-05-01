@@ -26,7 +26,6 @@
                             <!-- <p>фотография</p> -->
                         </div>
 
-                        <p class="error">{{errorText}}</p>
                         <!--
                         <button v-on:click="validation">
                             Зарегистрироваться
@@ -54,17 +53,17 @@
 </template>
 
 <script>
+import bottomHomeBar from './bottom-home-bar'
 
 // const axios = require('axios');
 document.title = "Регистрация";
-import bottomHomeBar from './bottom-home-bar'
 export default {
 	name: 'reguser',
     components : {bottomHomeBar},
 	props: {},
 	data() {
 		return{
-			errorText: ""
+
 		}
 	},
 	mounted: function() {},
@@ -78,7 +77,7 @@ export default {
 			else{
 				elem.style.border = "1px solid #B00020";
 				elem.style.backgroundColor = "#fee";
-				this.errorText = "Все поля необходимо заполнить корректно";
+				alert("All inputs should be valid");
 			}
 			return setRight;
 		},
@@ -119,7 +118,6 @@ export default {
 			// if all inputs are correct we form data for sending
 			if(isFullCorrect){
 				// delete error text
-				this.errorText = "";
 				// name and surname should begin with uppercase letter
 				let name = this.$refs.name.value[0].toUpperCase() + this.$refs.name.value.slice(1);
 				let surname = this.$refs.surname.value[0].toUpperCase() + this.$refs.surname.value.slice(1);
@@ -174,9 +172,9 @@ export default {
 					if(error != undefined){
 						let status = error.response.status;
 						if(status == 409){
-							this.errorText = "Пользователь с такой почтой уже зарегистрирован";
+							alert("User with this email is alredy exist");
 						}else{
-							this.errorText = "Произошла внутренняя ошибка. Попробуйте позже";
+							alert("Error. Try later");
 						}
 						return;
 					}
@@ -192,12 +190,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-/*
-.main-reguser{
-	margin: 0 auto;
-	width: 500px;
+/**/
+/*.main-reguser{
 	border: 1px solid #333;
-}
+}*/
+/*
 .title-reguser{
 	padding: 15px 0;
 

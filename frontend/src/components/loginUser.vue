@@ -24,9 +24,9 @@
 </template>
 
 <script>
-document.title = "Авторизация";
-
 import bottomHomeBar from './bottom-home-bar'
+
+document.title = "Авторизация";
 
 export default {
 	name: 'reguser',
@@ -34,7 +34,7 @@ export default {
 	props: {},
 	data() {
 		return {
-			errorText: ""
+
 		}
 	},
 	mounted: function () {
@@ -132,15 +132,16 @@ export default {
 				if (error != undefined) {
 					let status = error.response.status;
 					if (status == 404) {
-						this.errorText = "Пользователя с такими данными не существует";
+						alert("User doesn't exist");
 					} else {
-						this.errorText = "Произошла внутренняя ошибка. Попробуйте позже";
+						alert("Error. Try later");
 					}
 					return;
 				}
 
 				// if no error
-				this.$parent.login();
+				console.log(this.$root.$children[0]);
+				this.$root.$children[0].login();
 				this.$router.push('/');
 			});
 		}
@@ -155,7 +156,7 @@ export default {
 .main-reguser {
 	margin: 0 auto;
 	width: 500px;
-	border: 1px solid #333;
+	/*border: 1px solid #333;*/
 }
 
 .title-reguser {

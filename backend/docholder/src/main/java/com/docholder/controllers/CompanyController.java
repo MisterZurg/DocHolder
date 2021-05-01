@@ -96,7 +96,7 @@ public class CompanyController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-//    @PreAuthorize("hasPermission(#token, 'updateCompany')")
+    @PreAuthorize("hasPermission(#token, 'updateCompany')")
     @PutMapping
     public ResponseEntity<?> update(@RequestBody CompanyDto companyDto, @RequestParam String token) {
 //        System.out.println(companyDto);

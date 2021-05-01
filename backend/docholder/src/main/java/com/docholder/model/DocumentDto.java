@@ -11,7 +11,7 @@ import java.util.UUID;
 public class DocumentDto {
     private UUID id;
     private String name;
-//    private String filename;
+    private String filename;
     private String company_id;
     private String user_id;
     private UserRole role_modify;

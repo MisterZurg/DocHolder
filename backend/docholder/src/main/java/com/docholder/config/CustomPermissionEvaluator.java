@@ -46,6 +46,14 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
                 return false;
             }
         }
+        if(permission.toString().equals("updateCompany")){
+            try {
+                return updateCompanyPermission( (String) obj);
+            } catch (Exception e){
+                System.out.println("catch error during hasPermission() at createCompany");
+                return false;
+            }
+        }
 
         if(permission.toString().equals("putDocument") || permission.toString().equals("updateDocument")){
             try {
@@ -56,7 +64,6 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
                 return false;
             }
         }
-
         if(permission.toString().equals("readDocument")){
             try {
                 return readDocumentPermission( (DocumentSecurityTransfer) obj);
@@ -70,6 +77,15 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 //        if (user.getRole() != UserRole.ADMINISTRATOR) return false;
 
         return false;
+    }
+
+    //    if user role equals document modify role or DIRECTOR or ADMINISTRATOR then return true
+    private boolean updateCompanyPermission(String token){
+        if( !jwt.isValid(token) ) return false;
+        Map<String, Object> user = jwt.getData(token);
+
+        return user.get("role").equals("DIRECTOR")
+                || user.get("role").equals("ADMINISTRATOR");
     }
 
     //    if user role equals document modify role or DIRECTOR or ADMINISTRATOR then return true
