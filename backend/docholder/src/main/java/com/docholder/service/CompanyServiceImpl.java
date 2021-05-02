@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -60,15 +62,17 @@ public class CompanyServiceImpl implements CompanyService{
 
     @Override
     public boolean updateLogo(UUID id, MultipartFile logo){
-        System.out.println(logo);
-//        Company company = companyRepository.getOne(id);
-//        try {
-//            company.setLogo(logo.getBytes());
-//            companyRepository.save(company);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        // System.out.println(logo);
+        Company company = companyRepository.getOne(id);
 
+
+        try {
+            company.setLogo(logo.getBytes());
+            companyRepository.save(company);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 

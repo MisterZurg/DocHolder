@@ -7,6 +7,7 @@ import com.docholder.utilities.Jwt;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -86,15 +88,37 @@ public class CompanyController {
     }
 
 //    @PostMapping(value = "/logo", consumes = { MediaType.ALL_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
-    @PostMapping(value = "/logo")
+    @PostMapping(value = "/logo",
+            consumes = {
+            MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateLogo(
-            @RequestPart UUID id,
+            @RequestParam("id") UUID id,
             @RequestPart("file") MultipartFile logo
             )
     {
-//        companyService.updateLogo(id, logo);
+        companyService.updateLogo(id,logo);
+        return companyService.updateLogo(id, logo)
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+    }
+
+    @SneakyThrows
+    @PostMapping(value = "/logoo",
+            consumes = {
+                    MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> updateLogoo(
+            @RequestParam("id") UUID id,
+            @RequestPart("file") MultipartFile logo
+    )
+    {
+        //System.out.println(id);
+
+        // System.out.println(logo.getBytes());
+        companyService.updateLogo(id,logo);
+        // System.out.println(companyService.updateLogo(id,logo));
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
     @PreAuthorize("hasPermission(#token, 'updateCompany')")
     @PutMapping

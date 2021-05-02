@@ -2,6 +2,7 @@ package com.docholder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -23,7 +24,9 @@ public class Company {
     @Column(name = "description")
     private String description;
 
+    @Lob
     @Column(name = "logo")
+    @Type(type="org.hibernate.type.BinaryType")
     private byte[] logo;
 
     @Column(name = "status")

@@ -24,6 +24,7 @@ public interface CompanyService {
 
     boolean update(Company company, UUID id);
 
+    // boolean updateLogo(UUID id, MultipartFile logo);
     boolean updateLogo(UUID id, MultipartFile logo);
 
     boolean delete(UUID id);
