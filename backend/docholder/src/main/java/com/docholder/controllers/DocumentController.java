@@ -23,6 +23,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.Lob;
 import javax.print.Doc;
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -62,6 +63,16 @@ public class DocumentController {
 
         return bytes.length != 0
                 ? new ResponseEntity<>(bytes, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PreAuthorize("hasPermission(new com.docholder.utilities.DocumentSecurityTransfer(null, #token, #id), 'deleteDocument')")
+    @PostMapping(value = "/delete")
+    public ResponseEntity<?> deleteDocument(@RequestParam UUID id, @RequestParam String token){
+        boolean is_deleted = documentService.deleteDocument(id);
+
+        return is_deleted
+                ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 

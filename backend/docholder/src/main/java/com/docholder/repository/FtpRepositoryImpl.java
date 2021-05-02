@@ -55,4 +55,16 @@ public class FtpRepositoryImpl implements FtpRepository{
         return fileBytes;
     }
 
+    @Override
+    public boolean deleteFromFtpServer(String filename) throws Exception{
+        connect();
+
+        boolean is_deleted = con.deleteFile(filename);
+        System.out.println("is_deleted="+is_deleted);
+
+        disconnect();
+
+        return true;
+    }
+
 }

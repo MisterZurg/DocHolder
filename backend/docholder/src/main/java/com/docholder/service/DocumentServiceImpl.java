@@ -70,6 +70,30 @@ public class DocumentServiceImpl implements DocumentService{
     }
 
     @Override
+    public boolean deleteDocument(UUID id){
+        Document document = documentRepository.getOne(id);
+        String filename = document.getFilename();
+
+        try {
+            documentRepository.deleteById(id);
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println("catch error during deleteDocument() in DB section");
+            return false;
+        }
+
+        try {
+            boolean is_deleted = ftpRepository.deleteFromFtpServer(filename);
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println("catch error during deleteDocument() in FTP section but we return true");
+            return true;
+        }
+
+        return true;
+    }
+
+    @Override
     public Document getOneDocumentInfo(UUID id){
         try{
             return documentRepository.getOne(id);

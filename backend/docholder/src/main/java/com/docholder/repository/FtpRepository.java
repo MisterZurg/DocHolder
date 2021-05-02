@@ -6,4 +6,5 @@ import org.springframework.web.multipart.MultipartFile;
 public interface FtpRepository{
     boolean uploadToFtpServer(String filename, MultipartFile file) throws Exception;
     byte[] downloadFromFtpServer(String filename) throws Exception;
+    boolean deleteFromFtpServer(String filename) throws Exception;
 }

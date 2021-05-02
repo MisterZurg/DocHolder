@@ -10,6 +10,7 @@ public interface DocumentService {
 
     boolean putDocument(Document document, MultipartFile file);
     byte[] getDocument(UUID id);
+    boolean deleteDocument(UUID id);
     Document getOneDocumentInfo(UUID id);
     List<Document> getDocumentsByCompany(UUID id);
 
