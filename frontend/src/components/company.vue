@@ -6,11 +6,15 @@
 					<div class="md-subheading" id="status">Проверенный</div>
 					<md-button class="md-raised">Редактировать</md-button>
 				</div> -->
-				<div class="logo"><img src="https://www.netcracker.com/assets/templates/v.3.0/img/logo.png" alt=""></div>
-				
-				<div class="md-title" id="nowCompanyName" ref="nowCompanyName">{{companyName}}<span class="status not-verified">{{status}}</span></div>
-				<md-field id="changeCompanyName" ref="changeCompanyName">
-					<!-- <label>{{companyName}}</label> -->
+        <!--      Получить логотип из бд  -->
+				<div class="logo">
+          <!-- <img src="https://www.netcracker.com/assets/templates/v.3.0/img/logo.png" alt=""> -->
+          <img :src="logo">
+        </div>
+
+         <div class="md-title" id="nowCompanyName" ref="nowCompanyName">{{companyName}}<span class="status not-verified">{{status}}</span></div>
+         <md-field id="changeCompanyName" ref="changeCompanyName">
+           <!-- <label>{{companyName}}</label> -->
 					<md-input :value="companyName" ref="changeCompanyNameInput"></md-input>
 					<span class="md-helper-text">Company name</span>
 				</md-field>
@@ -176,6 +180,7 @@ export default {
 	},
 	data() {
 		return {
+      logo: '',
 			companyName: '',
 			description: '',
 			status: '',
@@ -372,6 +377,7 @@ export default {
 						let data = response.data;
 						this.companyName = data.name;
 						this.description = data.description;
+						this.logo = "data:image/jpeg;base64," + data.logo;
 
 						if(data.status == "DRAFT") this.status = "В процессе заполнения данных";
 						else if(data.status == "READY_TO_VERIFY") this.status = "На модерации";
