@@ -20,32 +20,45 @@
 					<label>Description</label>
 					<md-textarea :value="description" ref="changeDescriptionInput"></md-textarea>
 				</md-field>
+
+				<div class="not-verified">{{adminMessage}}</div>
 				
 				<md-button class="md-raised button-edit" v-on:click="editInfo();" ref="changeInfo">Редактировать</md-button>
-				<md-button class="md-raised button-edit md-primary" v-on:click="saveInfo();" ref="saveInfo" disabled>Сохранить</md-button>
+				<md-button class="md-raised button-edit md-primary" v-on:click="saveInfo();" ref="saveInfo" disabled>Отправить на проверку</md-button>
 				<md-button class="md-raised button-edit md-accent" v-on:click="cancelInfo();" ref="cancelInfo" disabled>Отменить</md-button>
-				<!-- <md-button class="md-raised">Отправить на проверку</md-button> -->
+				<md-button class="md-raised button-admin md-primary" v-on:click="publishCompany();" ref="publishInfo">Publish</md-button>
+				<md-button class="md-raised button-admin md-accent" v-on:click="declineCompany();" ref="declineInfo">Decline</md-button>
+				<md-field ref="declineNote" class="button-admin">
+					<md-input ref="declineNoteInput"></md-input>
+					<span class="md-helper-text">Reason of decline</span>
+				</md-field>
 			</md-tab>
 
 			<md-tab id="tab-pages" md-label="Документы">
-				<md-button class="md-primary md-raised" @click="showUploadDocument = true">Upload document</md-button>
+				<md-button class="md-primary md-raised button-edit" ref="newDocumentButton" @click="showUploadDocument = true">Upload new document</md-button>
 				<div class="md-title">Директорат</div>
 				<div class="document-container">
 					<div class="document md-elevation-3" v-for="document in documentsDirector" :key="document.id">
-						<div class="icon icon-pdf"></div>
+						<div class="icon icon-pdf">
+							<img :src="document.img" alt="">
+						</div>
 						<div class="name">{{document.name}}</div>
 						<div class="actions-bar">
 							<div class="action request">
-								<font-awesome-icon icon="eye" title="Запросить" />
-							</div>
-							<div class="action download">
-								<font-awesome-icon icon="download" title="Скачать" @click="downloadDocument(document.filename)" />
+								<font-awesome-icon icon="at" title="Request"
+									@click="requestDocument(document.id, document.role_read)" />
 							</div>
 							<div class="action edit">
-								<font-awesome-icon icon="pen-square" title="Редактировать" />
+								<font-awesome-icon icon="eye" title="Preview (pdf only)"
+									@click="readDocument(document.id, document.filename)" />
+							</div>
+							<div class="action download">
+								<font-awesome-icon icon="download" title="Download" 
+									@click="downloadDocument(document.id, document.filename)" />
 							</div>
 							<div class="action delete">
-								<font-awesome-icon icon="trash" title="Удалить" />
+								<font-awesome-icon icon="trash" title="Delete"
+									@click="deleteDocument(document.id)" />
 							</div>
 						</div>
 					</div>
@@ -53,20 +66,26 @@
 				<div class="md-title">Бухгалтерия</div>
 				<div class="document-container">
 					<div class="document md-elevation-3" v-for="document in documentsAccountant" :key="document.id">
-						<div class="icon icon-pdf"></div>
+						<div class="icon icon-pdf">
+							<img :src="document.img" alt="">
+						</div>
 						<div class="name">{{document.name}}</div>
 						<div class="actions-bar">
 							<div class="action request">
-								<font-awesome-icon icon="eye" title="Запросить" />
-							</div>
-							<div class="action download">
-								<font-awesome-icon icon="download" title="Скачать" />
+								<font-awesome-icon icon="at" title="Request"
+									@click="requestDocument(document.id, document.role_read)" />
 							</div>
 							<div class="action edit">
-								<font-awesome-icon icon="pen-square" title="Редактировать" />
+								<font-awesome-icon icon="eye" title="Preview (pdf only)"
+									@click="readDocument(document.id, document.filename)" />
+							</div>
+							<div class="action download">
+								<font-awesome-icon icon="download" title="Download" 
+									@click="downloadDocument(document.id, document.filename)" />
 							</div>
 							<div class="action delete">
-								<font-awesome-icon icon="trash" title="Удалить" />
+								<font-awesome-icon icon="trash" title="Delete"
+									@click="deleteDocument(document.id)" />
 							</div>
 						</div>
 					</div>
@@ -74,20 +93,26 @@
 				<div class="md-title">Остальные сотрудники</div>
 				<div class="document-container">
 					<div class="document md-elevation-3" v-for="document in documentsRegular" :key="document.id">
-						<div class="icon icon-pdf"></div>
+						<div class="icon icon-pdf">
+							<img :src="document.img" alt="">
+						</div>
 						<div class="name">{{document.name}}</div>
 						<div class="actions-bar">
 							<div class="action request">
-								<font-awesome-icon icon="eye" title="Запросить" />
-							</div>
-							<div class="action download">
-								<font-awesome-icon icon="download" title="Скачать" />
+								<font-awesome-icon icon="at" title="Request"
+									@click="requestDocument(document.id, document.role_read)" />
 							</div>
 							<div class="action edit">
-								<font-awesome-icon icon="pen-square" title="Редактировать" />
+								<font-awesome-icon icon="eye" title="Preview (pdf only)"
+									@click="readDocument(document.id, document.filename)" />
+							</div>
+							<div class="action download">
+								<font-awesome-icon icon="download" title="Download" 
+									@click="downloadDocument(document.id, document.filename)" />
 							</div>
 							<div class="action delete">
-								<font-awesome-icon icon="trash" title="Удалить" />
+								<font-awesome-icon icon="trash" title="Delete"
+									@click="deleteDocument(document.id)" />
 							</div>
 						</div>
 					</div>
@@ -95,20 +120,26 @@
 				<div class="md-title">Общедоступные документы</div>
 				<div class="document-container">
 					<div class="document md-elevation-3" v-for="document in documentsRegularUnemployed" :key="document.id">
-						<div class="icon icon-pdf"></div>
+						<div class="icon icon-pdf">
+							<img :src="document.img" alt="">
+						</div>
 						<div class="name">{{document.name}}</div>
 						<div class="actions-bar">
 							<div class="action request">
-								<font-awesome-icon icon="eye" title="Запросить" />
-							</div>
-							<div class="action download">
-								<font-awesome-icon icon="download" title="Скачать" />
+								<font-awesome-icon icon="at" title="Request"
+									@click="requestDocument(document.id, document.role_read)" />
 							</div>
 							<div class="action edit">
-								<font-awesome-icon icon="pen-square" title="Редактировать" />
+								<font-awesome-icon icon="eye" title="Preview (pdf only)"
+									@click="readDocument(document.id, document.filename)" />
+							</div>
+							<div class="action download">
+								<font-awesome-icon icon="download" title="Download" 
+									@click="downloadDocument(document.id, document.filename)" />
 							</div>
 							<div class="action delete">
-								<font-awesome-icon icon="trash" title="Удалить" />
+								<font-awesome-icon icon="trash" title="Delete"
+									@click="deleteDocument(document.id)" />
 							</div>
 						</div>
 					</div>
@@ -133,6 +164,15 @@
 						<md-button class="md-primary" @click="uploadDocument();">Upload</md-button>
 					</md-dialog-actions>
 				</md-dialog>
+				<md-dialog :md-active.sync="showReadDocument">
+					<md-dialog-title>Reading document</md-dialog-title>
+					<md-dialog-content>
+						<iframe frameborder="0" :src="urlPdf" class="document-reader"></iframe>
+					</md-dialog-content>
+					<md-dialog-actions>
+						<md-button class="md-primary" @click="showReadDocument=false">Close</md-button>
+					</md-dialog-actions>
+				</md-dialog>
 
 			</md-tab>
 
@@ -144,6 +184,7 @@
 							<img src="https://melmagazine.com/wp-content/uploads/2021/01/66f-1.jpg" alt="People">
 						</md-avatar>
 						<span class="">{{employee.name}} {{employee.surname}}</span>
+						<span class="">({{employee.email}})</span>
 					</div>
 				</div>
 				<div class="md-title">Бухгалтерия</div>
@@ -153,6 +194,7 @@
 							<img src="https://melmagazine.com/wp-content/uploads/2021/01/66f-1.jpg" alt="People">
 						</md-avatar>
 						<span class="">{{employee.name}} {{employee.surname}}</span>
+						<span class="">({{employee.email}})</span>
 					</div>
 				</div>
 				<div class="md-title">Остальные сотрудники</div>
@@ -162,6 +204,7 @@
 							<img src="https://melmagazine.com/wp-content/uploads/2021/01/66f-1.jpg" alt="People">
 						</md-avatar>
 						<span class="">{{employee.name}} {{employee.surname}}</span>
+						<span class="">({{employee.email}})</span>
 					</div>
 				</div>
 			</md-tab>
@@ -169,26 +212,27 @@
 </template>
 
 <script>
+
 export default {
 	name: 'HelloWorld',
-	props: {
-		msg: String
-	},
 	data() {
 		return {
 			companyName: '',
 			description: '',
 			status: '',
+			adminMessage: '',
 
 			employees: [],
 			documents: [],
 
 			is_editing: false,
 
+			showReadDocument: false,
 			showUploadDocument: false,
 			newDocumentPublic: false,
 			newDocumentFile: null,
 			documentBinary: null,
+			urlPdf: null
 		}
 	},
 	computed: {
@@ -233,8 +277,11 @@ export default {
 		console.log(this.$route.query.id);
 		if(this.$route.query.id != undefined){
 			this.getCompany();
+			this.showEditButtons();
 			this.getEmployees();
 			this.getDocuments();
+			this.showUploadButton();
+			this.showAdminButtons();
 		}
 		// let text = JSON.stringify({hello:'example'});
 		// this.downloadAsFile(text);
@@ -249,12 +296,11 @@ export default {
 			a.download = filename;
 			a.click();
 		},
-
-		downloadDocument(filename){
+		downloadDocument(id, filename){
 			var query = this.$http(
 			{
-				method: 'post',
-				url: 'http://localhost:8082/document/download?id='+'e5ce364a-8e66-4a0d-9031-0b67086ab5db'+'&token='+localStorage.token,
+				method: 'get',
+				url: 'http://localhost:8082/document/download?id='+id+'&token='+localStorage.token,
 				responseType: 'blob'
 			})
 			.then(function(response) {return response;})
@@ -263,15 +309,15 @@ export default {
 			query.then((response) => {
 				let status = response.status;
 
-				if(status == 404){
-					// console.log("catch error 404");
+				if(status == 403){
+					alert("You haven't permission");
 					return;
 				}
 					
 				if(status == 200){
 					let data = response.data;
-					console.log(response);
-					console.log(response.data);
+					// console.log(response);
+					// console.log(response.data);
 					this.downloadAsFile(data, filename);
 				}
 			});
@@ -279,11 +325,16 @@ export default {
 		setDocumentBinary(evt) {
 			this.documentBinary = evt[0];
 		},
+		showUploadButton(){
+			if(localStorage.company_id == this.$route.query.id){
+				this.$refs.newDocumentButton.$el.style.display = "inline-block";
+			}
+		},
 		uploadDocument(){
 			let name = this.$refs.newDocumentName.$el.value;
 			if(this.documentBinary == null || name == ""){
-				console.log(this.documentBinary);
-				console.log(name);
+				// console.log(this.documentBinary);
+				// console.log(name);
 				alert("The inputs mustn't be empty");
 				return;
 			}
@@ -324,8 +375,8 @@ export default {
 			query.then((response) => {
 				let status = response.status;
 
-				if(status == 409){
-					// console.log("catch error 404");
+				if(status == 403){
+					alert("You haven't permission");
 					return;
 				}
 				
@@ -344,11 +395,91 @@ export default {
 			this.newDocumentFile = null;
 			this.documentBinary = null;
 		},
+		readDocument(id, filename){
+			if(filename.split('.').pop() != "pdf"){
+				alert("Preview avaliable only for PDF files");
+				return;
+			}
+
+			var query = this.$http(
+			{
+				method: 'get',
+				url: 'http://localhost:8082/document/download?id='+id+'&token='+localStorage.token,
+				responseType: 'blob'
+			})
+			.then(function(response) {return response;})
+			.catch(function(error) {return error.response;});
+
+			query.then((response) => {
+				let status = response.status;
+
+				if(status == 403){
+					alert("You haven't permission");
+					return;
+				}
+					
+				if(status == 200){
+					let data = response.data;
+					// console.log(response);
+					// console.log(data);
+
+					
+					
+					// var blob = new Blob([data], { type: 'application/pdf' });
+					// var fileURL = URL.createObjectURL(blob);
+					// var newWin = window.open(fileURL);
+					// newWin.focus();
+
+					this.showReadDocument = true;
+					var blob = new Blob([data], { type: 'application/pdf' });
+					this.urlPdf = URL.createObjectURL(blob);
+				}
+			});
+		},
+		requestDocument(id, documentRole){
+			console.log(id);
+			if(localStorage.role == documentRole ||
+				localStorage.role == "DIRECTOR" ||
+				localStorage.role == "ADMINISTRATOR")
+			{
+				alert("You already have permission to this file");
+				return;
+			}
+			alert("This functional is not avaliable now");
+		},
+		deleteDocument(id){
+			if (!confirm("Are you sure you want to delete this document?")) return;
+
+			var query = this.$http(
+			{
+				method: 'delete',
+				url: 'http://localhost:8082/document/delete?id='+id+'&token='+localStorage.token,
+				headers: {
+					"Content-type": "application/json; charset=UTF-8"
+				}
+			})
+			.then(function(response) {return response;})
+			.catch(function(error) {return error.response;});
+
+			query.then((response) => {
+				let status = response.status;
+
+				if(status == 403){
+					alert("You haven't permission");
+					return;
+				}
+					
+				if(status == 200){
+					// let data = response.data;
+					// console.log(response);
+					// console.log(data);
+					alert("The document was successfully deleted");
+					this.getDocuments();
+				}
+			});
+		},
 
 		getCompany(){
-			// test ! then delete!
-			if(localStorage.token == undefined) return;
-
 			var query = this.$http(
 			{
 				method: 'get',
@@ -364,7 +495,7 @@ export default {
 					let status = response.status;
 
 					if(status == 404){
-						// console.log("catch error 404");
+						alert("This company doesn't exist");
 						return;
 					}
 					
@@ -380,6 +511,8 @@ export default {
 						else if(data.status == "PUBLISHED") this.status = "Проверенный";
 						
 						// console.log(data);
+						if(data.errorId != null) this.adminMessage = data.errorId.message;
+						else this.adminMessage = "";
 					}
 				});
 		},
@@ -433,11 +566,89 @@ export default {
 					if(status == 200){
 						let data = response.data;
 						this.documents = data;
-						console.log(data);
+						data.forEach(function(item) {
+							let extension = item.filename.split('.').pop();
+							if(extension == "pdf"){
+								item.img = "https://pics.freeicons.io/uploads/icons/png/15519179861536080156-512.png";
+							}else if(extension == "doc" || extension == "docx"){
+								item.img = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/.docx_icon.svg/1200px-.docx_icon.svg.png";
+							}else{
+								item.img = "https://img.icons8.com/plasticine/2x/document.png";
+							}
+						});
+						// console.log(data);
 					}
 				});
 		},
 
+		showAdminButtons(){
+			if(localStorage.role == "ADMINISTRATOR"){
+				this.$refs.publishInfo.$el.style.display = "inline-block";
+				this.$refs.declineInfo.$el.style.display = "inline-block";
+				this.$refs.declineNote.$el.style.display = "inline-block";
+			}
+		},
+		publishCompany(){
+			if (!confirm("Are you sure you want to approve this company?")) return;
+			var query = this.$http(
+			{
+				method: 'put',
+				url: 'http://localhost:8082/company/updateStatus?id='+this.$route.query.id+'&message=null&status=PUBLISHED&token='+localStorage.token,
+				headers: {
+					"Content-type": "application/json; charset=UTF-8"
+				}
+			})
+			.then(function(response) {return response;})
+			.catch(function(error) {return error.response;});
+
+			query.then((response) => {
+				let status = response.status;
+
+				if(status == 404){
+					// console.log("catch error 404");
+					return;
+				}
+					
+				if(status == 200){
+					alert("Company was approved");
+					this.getCompany();
+				}
+			});
+		},
+		declineCompany(){
+			if (!confirm("Are you sure you want to decline this company?")) return;
+			var query = this.$http(
+			{
+				method: 'put',
+				url: 'http://localhost:8082/company/updateStatus?id='+this.$route.query.id+'&message='+this.$refs.declineNoteInput.$el.value+'&status=NOT_APPROVED&token='+localStorage.token,
+				headers: {
+					"Content-type": "application/json; charset=UTF-8"
+				}
+			})
+			.then(function(response) {return response;})
+			.catch(function(error) {return error.response;});
+
+			query.then((response) => {
+				let status = response.status;
+
+				if(status == 404){
+					// console.log("catch error 404");
+					return;
+				}
+					
+				if(status == 200){
+					alert("Company was declined");
+					this.getCompany();
+				}
+			});
+		},
+		showEditButtons(){
+			if(localStorage.role == "DIRECTOR"){
+				this.$refs.changeInfo.$el.style.display = "inline-block";
+				this.$refs.saveInfo.$el.style.display = "inline-block";
+				this.$refs.cancelInfo.$el.style.display = "inline-block";
+			}
+		},
 		editInfo(){
 			this.beginEditing();
 		},
@@ -515,6 +726,11 @@ export default {
 #changeDescription{
 	display: none;
 }
+/*#tab-home,
+#tab-pages,
+#tab-posts{
+	overflow: hidden;
+}*/
 
 .md-textarea{
 	width: 500px;
@@ -559,30 +775,45 @@ export default {
 #nowDescription{
 	margin-bottom: 25px;
 }
+.button-edit{
+	display: none;
+}
+.button-admin{
+	display: none;
+}
 
 .document-container{
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+	/*grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;*/
+	grid-template-columns: repeat( auto-fill, minmax(150px, 1fr) );
 	grid-gap: 2vw;
 }
 .document{
 	/*display: inline-block;*/
 	width: 150px;
-	height: 150px;
+	height: 160px;
 	/*border: 1px solid #333;*/
 }
 .icon{
+	margin-top: 10px;
 	height: 70px;
 }
-.icon-pdf{
+.icon img{
+	display: block;
+	margin: 0 auto;
+	max-height: 100%;
+	max-width: 100%;
+}
+/*.icon-pdf{
 	background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1200px-PDF_file_icon.svg.png");
 	background-size: auto 100%;
 	background-repeat: no-repeat;
 	background-position: center;
-}
+}*/
 .name{
 	margin: 5px 0;
 	height: 40px;
+	overflow: hidden;
 
 	text-align: center;
 }
@@ -596,6 +827,10 @@ export default {
 	border: 1px solid #333;
 	box-sizing: border-box;
 	cursor: pointer;
+	transition: background 0.2s ease-in-out;
+}
+.action:hover{
+	background-color: #222;
 }
 .person-container{
 /*	display: flex;
@@ -606,14 +841,23 @@ export default {
 	/*border: 1px solid red;*/
 
 	display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-gap: 2vw;
+  /*grid-template-columns: 1fr 1fr 1fr 1fr;*/
+	grid-template-columns: repeat( auto-fill, minmax(400px, 1fr) );
+	grid-gap: 2vw;
 }
 .person{
 	margin-right: 20px;
+
+	white-space: nowrap;
+	overflow: hidden;
 	/*display: inline-block;;*/
 }
 .person > span{
 	margin-left: 10px;
+}
+
+.document-reader{
+	height: 60vh;
+	width: 70vw;
 }
 </style>

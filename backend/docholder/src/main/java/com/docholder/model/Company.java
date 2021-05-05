@@ -2,6 +2,7 @@ package com.docholder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -29,4 +30,13 @@ public class Company {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private CompanyStatus status;
+
+//    @OneToOne (cascade=CascadeType.ALL)
+//    @JoinColumn (name="error_id")
+//    @Column(name = "error_id")
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @PrimaryKeyJoinColumn
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name="error_id")
+    private CompanyValidationErrors errorId;
 }

@@ -93,7 +93,7 @@
             </div>
             <br/>
             <div>
-                <router-link to='/main-page'>
+                <router-link to='/'>
                     <md-button class="md-icon-button">
                         <md-icon>home</md-icon>
                     </md-button>

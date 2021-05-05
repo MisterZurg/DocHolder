@@ -60,11 +60,10 @@ public class FtpRepositoryImpl implements FtpRepository{
         connect();
 
         boolean is_deleted = con.deleteFile(filename);
-        System.out.println("is_deleted="+is_deleted);
 
         disconnect();
 
-        return true;
+        return is_deleted;
     }
 
 }

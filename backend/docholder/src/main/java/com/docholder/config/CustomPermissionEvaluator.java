@@ -1,9 +1,6 @@
 package com.docholder.config;
 
-import com.docholder.model.Document;
-import com.docholder.model.DocumentDto;
-import com.docholder.model.User;
-import com.docholder.model.UserRole;
+import com.docholder.model.*;
 import com.docholder.repository.DocumentRepository;
 import com.docholder.service.DocumentService;
 import com.docholder.service.DocumentServiceImpl;
@@ -24,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CustomPermissionEvaluator implements PermissionEvaluator {
     private final DocumentService documentService;
+    private final DocumentMapper documentMapper;
     private final Jwt jwt;
 
     @Override
@@ -54,8 +52,16 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
                 return false;
             }
         }
+        if(permission.toString().equals("updateCompanyStatus")){
+            try {
+                return updateCompanyStatusPermission( (String) obj);
+            } catch (Exception e){
+                System.out.println("catch error during hasPermission() at updateCompanyStatus");
+                return false;
+            }
+        }
 
-        if(permission.toString().equals("putDocument") || permission.toString().equals("updateDocument")){
+        if(permission.toString().equals("putDocument")){
             try {
                 return modifyDocumentPermission( (DocumentSecurityTransfer) obj);
             } catch (Exception e){
@@ -68,7 +74,16 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             try {
                 return readDocumentPermission( (DocumentSecurityTransfer) obj);
             } catch (Exception e){
+                e.printStackTrace();
                 System.out.println("catch error during hasPermission() at readDocument");
+                return false;
+            }
+        }
+        if(permission.toString().equals("deleteDocument")){
+            try {
+                return modifyDocumentPermission( (DocumentSecurityTransfer) obj);
+            } catch (Exception e){
+                System.out.println("catch error during hasPermission() at deleteDocument");
                 return false;
             }
         }
@@ -93,17 +108,31 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         return jwt.isValid(token);
     }
 
-//    if user role equals document modify role or DIRECTOR or ADMINISTRATOR then return true
-    private boolean modifyDocumentPermission(DocumentSecurityTransfer documentSecurityTransfer){
-        DocumentDto documentDto = documentSecurityTransfer.getDocumentDto();
-        String token = documentSecurityTransfer.getToken();
-
+    private boolean updateCompanyStatusPermission(String token){
         if( !jwt.isValid(token) ) return false;
         Map<String, Object> user = jwt.getData(token);
 
-        if( !user.get("company_id").equals(documentDto.getCompany_id()) ) return false;
+        return user.get("role").equals("ADMINISTRATOR");
+    }
 
-        return user.get("role").equals(documentDto.getRole_modify().toString())
+//    if user role equals document modify role or DIRECTOR or ADMINISTRATOR then return true
+    private boolean modifyDocumentPermission(DocumentSecurityTransfer documentSecurityTransfer){
+        Document document;
+
+        if(documentSecurityTransfer.getDocumentDto() == null){
+            document = documentService.getOneDocumentInfo(documentSecurityTransfer.getId());
+        }else {
+            DocumentDto documentDto = documentSecurityTransfer.getDocumentDto();
+            document = documentMapper.dtoToEntity(documentDto);
+        }
+
+        String token = documentSecurityTransfer.getToken();
+        if( !jwt.isValid(token) ) return false;
+        Map<String, Object> user = jwt.getData(token);
+
+        if( !user.get("company_id").equals(document.getCompany_id()) ) return false;
+
+        return user.get("role").equals(document.getRole_modify().toString())
                 || user.get("role").equals("DIRECTOR")
                 || user.get("role").equals("ADMINISTRATOR");
     }

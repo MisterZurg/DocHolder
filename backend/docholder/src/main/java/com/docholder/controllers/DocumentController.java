@@ -57,7 +57,7 @@ public class DocumentController {
     }
 
     @PreAuthorize("hasPermission(new com.docholder.utilities.DocumentSecurityTransfer(null, #token, #id), 'readDocument')")
-    @PostMapping(value = "/download")
+    @GetMapping(value = "/download")
     public ResponseEntity<?> getDocument(@RequestParam UUID id, @RequestParam String token){
         byte[] bytes = documentService.getDocument(id);
 
@@ -67,7 +67,7 @@ public class DocumentController {
     }
 
     @PreAuthorize("hasPermission(new com.docholder.utilities.DocumentSecurityTransfer(null, #token, #id), 'deleteDocument')")
-    @PostMapping(value = "/delete")
+    @DeleteMapping(value = "/delete")
     public ResponseEntity<?> deleteDocument(@RequestParam UUID id, @RequestParam String token){
         boolean is_deleted = documentService.deleteDocument(id);
 

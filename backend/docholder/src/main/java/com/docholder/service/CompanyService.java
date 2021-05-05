@@ -1,6 +1,7 @@
 package com.docholder.service;
 
 import com.docholder.model.Company;
+import com.docholder.model.CompanyStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,8 @@ public interface CompanyService {
     boolean update(Company company, UUID id);
 
     boolean updateLogo(UUID id, MultipartFile logo);
+
+    boolean updateStatus(UUID id, CompanyStatus status, String message);
 
     boolean delete(UUID id);
 

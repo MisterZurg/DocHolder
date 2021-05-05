@@ -8,6 +8,7 @@ import loginUser from './components/loginUser'
 import companies from './components/companies'
 import registerTest from './components/registerUserForm'
 import company from './components/company'
+import profile from './components/profile'
 //import vuetify from './plugins/vuetify';
 
 import VueMaterial from 'vue-material'
@@ -18,10 +19,10 @@ import mainPage from "@/components/mainPage";
 Vue.use(VueMaterial)
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCoffee, faInfoCircle, faUserPlus, faSignInAlt, faSignOutAlt, faPenSquare, faDownload, faTrash, faEye } from '@fortawesome/free-solid-svg-icons'
+import { faHome, faCoffee, faInfoCircle, faUserPlus, faSignInAlt, faSignOutAlt, faPenSquare, faDownload, faTrash, faEye, faAt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faCoffee, faInfoCircle, faUserPlus, faSignInAlt, faSignOutAlt, faPenSquare, faDownload, faTrash, faEye)
+library.add(faHome, faCoffee, faInfoCircle, faUserPlus, faSignInAlt, faSignOutAlt, faPenSquare, faDownload, faTrash, faEye, faAt)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
@@ -31,7 +32,7 @@ Vue.use(VueRouter);
 const routes = [
 	{
 		path: "/",
-		component: index
+		component: mainPage
 	},
 	{
 		path: "/reg-user",
@@ -46,8 +47,8 @@ const routes = [
         component: companies
     },
 	{
-		path: "/main-page",
-		component: mainPage,
+		path: "/about",
+		component: index,
 		children: []
 	},
 	{
@@ -57,6 +58,10 @@ const routes = [
 	{
 		path: "/company",
 		component: company
+	},
+	{
+		path: "/profile",
+		component: profile
 	}
 ];
 

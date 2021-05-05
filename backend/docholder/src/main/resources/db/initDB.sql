@@ -37,8 +37,13 @@ CREATE TABLE IF NOT EXISTS companies
     name        VARCHAR(200)       NOT NULL ,
     description TEXT               NOT NULL ,
     logo        BYTEA                       ,
-    status      companyStatus_type NOT NULL DEFAULT 'DRAFT'::companyStatus_type
+    status      companyStatus_type NOT NULL DEFAULT 'DRAFT'::companyStatus_type,
+    error_id    UUID               DEFAULT NULL
     );
+CREATE TABLE IF NOT EXISTS company_validation_errors(
+    id         UUID               PRIMARY KEY,
+    message     TEXT
+);
 
 CREATE TABLE IF NOT EXISTS documents
 (

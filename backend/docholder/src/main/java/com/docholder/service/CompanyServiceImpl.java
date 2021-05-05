@@ -1,6 +1,8 @@
 package com.docholder.service;
 
 import com.docholder.model.Company;
+import com.docholder.model.CompanyStatus;
+import com.docholder.model.CompanyValidationErrors;
 import com.docholder.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -69,6 +71,29 @@ public class CompanyServiceImpl implements CompanyService{
 //            e.printStackTrace();
 //        }
 
+        return true;
+    }
+
+    @Override
+    public boolean updateStatus(UUID id, CompanyStatus status, String message){
+        try{
+            Company company = companyRepository.getOne(id);
+            company.setStatus(status);
+
+            if(message.equals("null")){
+                company.setErrorId(null);
+            } else {
+                CompanyValidationErrors companyError = new CompanyValidationErrors();
+                companyError.setMessage(message);
+                company.setErrorId(companyError);
+            }
+
+            companyRepository.save(company);
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Catch error during updateStatus()");
+            return false;
+        }
         return true;
     }
 

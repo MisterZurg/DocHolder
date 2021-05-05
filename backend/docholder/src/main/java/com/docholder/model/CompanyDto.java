@@ -14,4 +14,5 @@ public class CompanyDto {
     private String description;
     private byte[] logo;
     private CompanyStatus status;
+    private CompanyValidationErrors errorId;
 }

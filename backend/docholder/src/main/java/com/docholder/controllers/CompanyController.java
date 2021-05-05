@@ -30,6 +30,7 @@ public class CompanyController {
     private final CompanyMapper companyMapper;
     private final Jwt jwt;
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PreAuthorize("hasPermission(#token, 'createCompany')")
     @PostMapping
@@ -38,7 +39,7 @@ public class CompanyController {
 //            System.out.println(company);
 //            System.out.println(token);
 
-        // Will move to user service
+        // Will move to CustomPermissionEvaluator
         Map<String, Object> userdata = jwt.getData(token);
         User user = userService.read( UUID.fromString(userdata.get("id").toString()));
         if(!(user.getCompany_id() == null)) {
@@ -52,8 +53,9 @@ public class CompanyController {
         user.setRole(UserRole.DIRECTOR);
         userService.update(user, user.getId());
 
+        String newtoken = jwt.generateTokenByUser( userMapper.entityToDto(user) );
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(newtoken, HttpStatus.CREATED);
 //        return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -108,6 +110,21 @@ public class CompanyController {
 //        boolean updated = true;
         return updated
                 ? new ResponseEntity<>(companyMapper.entityToDto(company), HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+    }
+
+    @PreAuthorize("hasPermission(#token, 'updateCompanyStatus')")
+    @PutMapping(value = "updateStatus")
+    public ResponseEntity<?> updateStatus(
+            @RequestParam UUID id,
+            @RequestParam CompanyStatus status,
+            @RequestParam String message,
+            @RequestParam String token)
+    {
+        boolean is_updated = companyService.updateStatus(id, status, message);
+
+        return is_updated
+                ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
