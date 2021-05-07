@@ -99,6 +99,7 @@ export default {
 				})
 				.catch(function (error) {
 					console.log("catch error : " + error);
+					alert("No company authorized in our service yet. Create one and come back");
 					return error;
 				});
 			return data;

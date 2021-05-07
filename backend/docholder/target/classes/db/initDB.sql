@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS users
     phone       VARCHAR(20)  NOT NULL ,
     gender      gender_type  NOT NULL ,
     company_id  UUID,
-    role        role_type    NOT NULL DEFAULT 'REGULAR_UNEMPLOYED'::role_type
+    role        role_type    NOT NULL DEFAULT 'REGULAR_UNEMPLOYED'::role_type,
+    avatar      BYTEA
     );
 
 

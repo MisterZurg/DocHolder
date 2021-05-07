@@ -41,10 +41,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 
-/*.md-title{
-	padding: 25px 0;
-}*/
 
 </style>

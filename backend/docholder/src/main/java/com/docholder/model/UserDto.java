@@ -18,4 +18,5 @@ public class UserDto {
     private UserGender gender;
     private UUID company_id;
     private UserRole role;
+    private byte[] avatar;
 }

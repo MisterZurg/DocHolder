@@ -2,6 +2,7 @@ package com.docholder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import org.hibernate.annotations.Type;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
@@ -44,4 +45,9 @@ public class User {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @Lob
+    @Column(name = "avatar")
+    @Type(type="org.hibernate.type.BinaryType")
+    private byte[] avatar;
 }

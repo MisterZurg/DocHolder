@@ -134,7 +134,6 @@ export default {
 		},
 
 
-
 		getCompany(){
 			var query = this.$http(
 			{
@@ -241,9 +240,13 @@ export default {
 		},
 		showEditButtons(){
 			if(localStorage.role == "DIRECTOR" && localStorage.company_id == this.$route.query.id){
-				this.$refs.changeInfo.$el.style.display = "inline-block";
-				this.$refs.saveInfo.$el.style.display = "inline-block";
-				this.$refs.cancelInfo.$el.style.display = "inline-block";
+				console.log("we show edit button");
+				// this.$refs.changeInfo.$el.style.display = "inline-block";
+				// this.$refs.saveInfo.$el.style.display = "inline-block";
+				// this.$refs.cancelInfo.$el.style.display = "inline-block";
+				this.$refs.changeInfo.$el.style.visibility = "visible";
+				this.$refs.saveInfo.$el.style.visibility = "visible";
+				this.$refs.cancelInfo.$el.style.visibility = "visible";
 			}
 		},
 		editInfo(){
@@ -300,7 +303,8 @@ export default {
 			this.$refs.nowCompanyName.style.display = "none";
 			this.$refs.nowDescription.style.display = "none";
 
-			this.$refs.changeLogo.$el.style.display = "block";
+			this.$refs.changeLogo.$el.style.visibility = "visible";
+			this.$refs.changeLogo.$el.style.visibility = "block";
 			this.$refs.changeInfo.$el.disabled = true;
 			this.$refs.saveInfo.$el.disabled = false;
 			this.$refs.cancelInfo.$el.disabled = false;
@@ -321,7 +325,7 @@ export default {
 
 </script>
 
-<style scoped>
+<style scoped="true">
 
 .md-title{
 	padding: 25px 0;
@@ -362,10 +366,12 @@ export default {
 	margin-bottom: 25px;
 }
 .button-edit{
-	display: none;
+	/*display: none;*/
+	visibility: hidden;
 }
 .button-admin{
-	display: none;
+	/*display: none;*/
+	visibility: hidden;
 }
 
 
