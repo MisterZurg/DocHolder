@@ -6,6 +6,7 @@ import com.docholder.model.CompanyValidationErrors;
 import com.docholder.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +32,12 @@ public class CompanyServiceImpl implements CompanyService{
     }
 
     @Override
+    public Page<Company> findAllByPage(int limit, int page){
+        Pageable pageable = PageRequest.of(page, limit);
+        return companyRepository.findAll(pageable);
+    }
+
+    @Override
     public List<Company> readAll() {
 
         return companyRepository.findAll();
@@ -46,31 +53,40 @@ public class CompanyServiceImpl implements CompanyService{
     }
 
     @Override
-    public Page<Company> findAllByPage(Pageable pageable){
-        return companyRepository.findAll(pageable);
+    public long countPublished(){
+        return companyRepository.countAllByStatus(CompanyStatus.PUBLISHED);
     }
 
     @Override
-    public boolean update(Company company, UUID id) {
-        if (companyRepository.existsById(id)){
-            company.setId(id);
+    public Page<Company> findAllPublishedByPage(int limit, int page){
+        Pageable pageable = PageRequest.of(page, limit);
+        return companyRepository.findAllByStatus(CompanyStatus.PUBLISHED, pageable);
+    }
+
+    @Override
+    public boolean update(Company company) {
+        try {
+            if(company.getLogo() == null){
+                company.setLogo( companyRepository.getOne(company.getId()).getLogo() );
+            }
             companyRepository.save(company);
-            return true;
+        } catch (Exception e) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateLogo(UUID id, MultipartFile logo){
-        System.out.println(logo);
-//        Company company = companyRepository.getOne(id);
-//        try {
-//            company.setLogo(logo.getBytes());
-//            companyRepository.save(company);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        Company company = companyRepository.getOne(id);
 
+        try {
+            company.setLogo(logo.getBytes());
+            companyRepository.save(company);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 

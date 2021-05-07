@@ -14,16 +14,19 @@ public interface CompanyService {
     void create(Company company);
 
     long count();
+    Page<Company> findAllByPage(int limit, int page);
 
     List<Company> readAll();
 
     Company read(UUID id);
 
-    Page<Company> findAllByPage(Pageable pageable);
+
+    long countPublished();
+    Page<Company> findAllPublishedByPage(int limit, int page);
 
 //    User readByEmail(String email);
 
-    boolean update(Company company, UUID id);
+    boolean update(Company company);
 
     boolean updateLogo(UUID id, MultipartFile logo);
 

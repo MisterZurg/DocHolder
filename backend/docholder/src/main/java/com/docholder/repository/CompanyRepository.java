@@ -1,7 +1,10 @@
 package com.docholder.repository;
 
 import com.docholder.model.Company;
+import com.docholder.model.CompanyStatus;
 import com.docholder.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,4 +18,7 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
 //
 //    @Query("SELECT u FROM User u WHERE (u.email = :email)")
 //    User findUserByEmail(@Param("email") String email);
+
+    Page<Company> findAllByStatus(CompanyStatus status, Pageable pageable);
+    long countAllByStatus(CompanyStatus status);
 }

@@ -223,6 +223,7 @@ export default {
 				return;
 			}
 			this.$router.push('/company?id='+localStorage.getItem('company_id')).catch(()=>{});
+			this.$router.go();
 		},
 		moveToProfile: function(){
 			console.log("move yee moooveee");
@@ -231,6 +232,7 @@ export default {
 				return;
 			}
 			this.$router.push('/profile?id='+localStorage.getItem('id')).catch(()=>{});
+			this.$router.go();
 		},
 
 		// is user authorized

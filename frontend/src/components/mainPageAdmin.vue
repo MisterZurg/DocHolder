@@ -15,6 +15,7 @@
 				</md-table-cell>
 				<md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
 				<md-table-cell md-label="Description" md-sort-by="description">{{ item.description }}</md-table-cell>
+				<md-table-cell md-label="Status" md-sort-by="status">{{ item.status }}</md-table-cell>
 			</md-table-row>
 
 		</md-table>
@@ -56,9 +57,6 @@ export default {
 		companies_data: []
 	}),
 	mounted: function () {
-		if(localStorage.role == "ADMINISTRATOR"){
-			this.$router.push('/mainPageAdmin');
-		}
 		this.companies_data = this.getCompanies();
 		this.pageColumn = this.getPageColumn();
 		this.searched = this.companies_data;
@@ -72,7 +70,7 @@ export default {
 			this.$http(
 				{
 					method: 'get',
-					url: 'http://localhost:8082/company/published?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1),
+					url: 'http://localhost:8082/company?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1),
 					headers: {
 						"Content-type": "application/json; charset=UTF-8"
 					}
@@ -92,7 +90,8 @@ export default {
 							company_id: content[i].id,
 							name: content[i].name,
 							description: content[i].description,
-							logo: content[i].logo
+							logo: content[i].logo,
+							status: content[i].status
 						});
 					}
 					return data;
@@ -107,7 +106,7 @@ export default {
 			var query = this.$http(
 				{
 					method: 'get',
-					url: 'http://localhost:8082/company/countPublished',
+					url: 'http://localhost:8082/company/count',
 					headers: {
 						"Content-type": "application/json; charset=UTF-8"
 					}

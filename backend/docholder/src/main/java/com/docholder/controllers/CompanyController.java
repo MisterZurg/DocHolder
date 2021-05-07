@@ -60,8 +60,21 @@ public class CompanyController {
     }
 
     @GetMapping(value ="/count")
-    public ResponseEntity<List<Company>> count() {
+    public ResponseEntity<?> count() {
         return new ResponseEntity(companyService.count(), HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Company>> readAllByPage(
+            @RequestParam(name = "limit") int limit,
+            @RequestParam(name = "page") int page)
+    {
+        Page<Company> companies = companyService.findAllByPage(limit, page);
+
+        Page<CompanyDto> companiesDto = companyMapper.entityToDto(companies);
+        return companiesDto != null &&  !companiesDto.isEmpty()
+                ? new ResponseEntity(companiesDto, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(value ="/read")
@@ -73,13 +86,17 @@ public class CompanyController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Company>> readAllByPage(
+    @GetMapping(value ="/countPublished")
+    public ResponseEntity<?> countPublished() {
+        return new ResponseEntity(companyService.countPublished(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "published")
+    public ResponseEntity<List<Company>> readAllPublishedByPage(
             @RequestParam(name = "limit") int limit,
             @RequestParam(name = "page") int page)
     {
-        Pageable pageable = PageRequest.of(page, limit);
-        Page<Company> companies = companyService.findAllByPage(pageable);
+        Page<Company> companies = companyService.findAllPublishedByPage(limit, page);
 
         Page<CompanyDto> companiesDto = companyMapper.entityToDto(companies);
         return companiesDto != null &&  !companiesDto.isEmpty()
@@ -87,27 +104,27 @@ public class CompanyController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-//    @PostMapping(value = "/logo", consumes = { MediaType.ALL_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
-    @PostMapping(value = "/logo")
+    @PreAuthorize("hasPermission(#token, 'updateCompany')")
+    @PostMapping(value = "/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateLogo(
-            @RequestPart UUID id,
-            @RequestPart("file") MultipartFile logo
-            )
+            @RequestParam("id") UUID id,
+            @RequestParam String token,
+            @RequestPart("file") MultipartFile logo)
     {
-//        companyService.updateLogo(id, logo);
-        return new ResponseEntity<>(HttpStatus.OK);
+        companyService.updateLogo(id,logo);
+        return companyService.updateLogo(id, logo)
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
     @PreAuthorize("hasPermission(#token, 'updateCompany')")
     @PutMapping
     public ResponseEntity<?> update(@RequestBody CompanyDto companyDto, @RequestParam String token) {
-//        System.out.println(companyDto);
         Company company = companyMapper.dtoToEntity(companyDto);
         company.setStatus(CompanyStatus.READY_TO_VERIFY);
-//        System.out.println(company);
-        final boolean updated = companyService.update(company, company.getId());
 
-//        boolean updated = true;
+        final boolean updated = companyService.update(company);
+
         return updated
                 ? new ResponseEntity<>(companyMapper.entityToDto(company), HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);

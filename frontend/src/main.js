@@ -15,6 +15,7 @@ import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default-dark.css'
 import mainPage from "@/components/mainPage";
+import mainPageAdmin from "@/components/mainPageAdmin";
 
 Vue.use(VueMaterial)
 
@@ -33,6 +34,10 @@ const routes = [
 	{
 		path: "/",
 		component: mainPage
+	},
+	{
+		path: "/mainPageAdmin",
+		component: mainPageAdmin
 	},
 	{
 		path: "/reg-user",
