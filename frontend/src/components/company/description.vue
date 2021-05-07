@@ -43,12 +43,14 @@
 		<md-button class="md-raised button-edit" v-on:click="editInfo();" ref="changeInfo">Редактировать</md-button>
 		<md-button class="md-raised button-edit md-primary" v-on:click="saveInfo();" ref="saveInfo" disabled>Отправить на проверку</md-button>
 		<md-button class="md-raised button-edit md-accent" v-on:click="cancelInfo();" ref="cancelInfo" disabled>Отменить</md-button>
-		<md-button class="md-raised button-admin md-primary" v-on:click="publishCompany();" ref="publishInfo">Publish</md-button>
-		<md-button class="md-raised button-admin md-accent" v-on:click="declineCompany();" ref="declineInfo">Decline</md-button>
-		<md-field ref="declineNote" class="button-admin">
-			<md-input ref="declineNoteInput"></md-input>
-			<span class="md-helper-text">Reason of decline</span>
-		</md-field>
+		<div>
+			<md-button class="md-raised button-admin md-primary" v-on:click="publishCompany();" ref="publishInfo">Publish</md-button>
+			<md-button class="md-raised button-admin md-accent" v-on:click="declineCompany();" ref="declineInfo">Decline</md-button>
+			<md-field ref="declineNote" class="button-admin">
+				<md-input ref="declineNoteInput"></md-input>
+				<span class="md-helper-text">Reason of decline</span>
+			</md-field>
+		</div>
 	</div>
 </template>
 
@@ -179,9 +181,9 @@ export default {
 
 		showAdminButtons(){
 			if(localStorage.role == "ADMINISTRATOR"){
-				this.$refs.publishInfo.$el.style.display = "inline-block";
-				this.$refs.declineInfo.$el.style.display = "inline-block";
-				this.$refs.declineNote.$el.style.display = "inline-block";
+				this.$refs.publishInfo.$el.style.visibility = "visible";
+				this.$refs.declineInfo.$el.style.visibility = "visible";
+				this.$refs.declineNote.$el.style.visibility = "visible";
 			}
 		},
 		publishCompany(){
