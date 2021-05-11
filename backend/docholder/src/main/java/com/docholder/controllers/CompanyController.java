@@ -1,6 +1,8 @@
 package com.docholder.controllers;
 
 import com.docholder.model.*;
+import com.docholder.repository.CompanyRepository;
+import com.docholder.repository.UserRepository;
 import com.docholder.service.CompanyService;
 import com.docholder.service.UserService;
 import com.docholder.utilities.Jwt;
@@ -15,6 +17,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +34,10 @@ public class CompanyController {
     private final Jwt jwt;
     private final UserService userService;
     private final UserMapper userMapper;
+    private final JobOfferMapper jobOfferMapper;
+
+    private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
 
     @PreAuthorize("hasPermission(#token, 'createCompany')")
     @PostMapping
@@ -87,16 +94,17 @@ public class CompanyController {
     }
 
     @GetMapping(value ="/countPublished")
-    public ResponseEntity<?> countPublished() {
-        return new ResponseEntity(companyService.countPublished(), HttpStatus.OK);
+    public ResponseEntity<?> countPublished(@RequestParam(name = "filter") String name) {
+        return new ResponseEntity(companyService.countPublishedByName(name), HttpStatus.OK);
     }
 
     @GetMapping(value = "published")
     public ResponseEntity<List<Company>> readAllPublishedByPage(
             @RequestParam(name = "limit") int limit,
-            @RequestParam(name = "page") int page)
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "filter") String name)
     {
-        Page<Company> companies = companyService.findAllPublishedByPage(limit, page);
+        Page<Company> companies = companyService.findAllPublishedByPageAndName(limit, page, name);
 
         Page<CompanyDto> companiesDto = companyMapper.entityToDto(companies);
         return companiesDto != null &&  !companiesDto.isEmpty()
@@ -111,7 +119,7 @@ public class CompanyController {
             @RequestParam String token,
             @RequestPart("file") MultipartFile logo)
     {
-        companyService.updateLogo(id,logo);
+//        companyService.updateLogo(id,logo);
         return companyService.updateLogo(id, logo)
                 ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
@@ -145,12 +153,45 @@ public class CompanyController {
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> delete(@PathVariable(name = "id") UUID id) {
-        final boolean deleted = companyService.delete(id);
+//    @DeleteMapping(value = "/{id}")
+//    public ResponseEntity<?> delete(@PathVariable(name = "id") UUID id) {
+//        final boolean deleted = companyService.delete(id);
+//
+//        return deleted
+//                ? new ResponseEntity<>(HttpStatus.OK)
+//                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+//    }
 
-        return deleted
+    @PreAuthorize("hasPermission(#token, 'updateCompany')")
+    @PostMapping(value = "/invite")
+    public ResponseEntity<?> invite(@RequestBody JobOffer jobOffer, @RequestParam String email, @RequestParam String token){
+
+        System.out.println(jobOffer);
+        System.out.println(email);
+
+        return companyService.invite(jobOffer, email)
                 ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+    }
+    @GetMapping(value = "/invite")
+    public ResponseEntity<?> getInvitations(@RequestParam(name = "user_id") UUID userId){
+        List<JobOffer> jobOffer = companyService.getInvitations(userId);
+        List<JobOfferDto> jobOffersDto = jobOfferMapper.entityToDto(jobOffer);
+        jobOffersDto.stream().forEach(jobOfferDto -> {
+            jobOfferDto.setCompany_name( companyRepository.getOne(jobOfferDto.getCompany_id()).getName() );
+            jobOfferDto.setEmployer_name( userRepository.getOne(jobOfferDto.getEmployer_id()).getName() );
+            jobOfferDto.setEmployer_surname( userRepository.getOne(jobOfferDto.getEmployer_id()).getSurname() );
+        });
+        return new ResponseEntity<>(jobOffersDto, HttpStatus.OK);
+    }
+    @PreAuthorize("hasPermission(new com.docholder.utilities.JobOfferSecurityTransfer(#token, #id), 'setJobOfferStatus')")
+    @PostMapping(value = "/invite/status")
+    public ResponseEntity<?> setInviteStatus(
+            @RequestParam UUID id,
+            @RequestParam NoticeStatus status,
+            @RequestParam String token)
+    {
+        String newToken = companyService.setInviteStatus(id, status);
+        return new ResponseEntity<>(newToken, HttpStatus.OK);
     }
 }

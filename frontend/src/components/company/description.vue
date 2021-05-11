@@ -40,9 +40,9 @@
 
 		<div class="not-verified">{{adminMessage}}</div>
 
-		<md-button class="md-raised button-edit" v-on:click="editInfo();" ref="changeInfo">Редактировать</md-button>
-		<md-button class="md-raised button-edit md-primary" v-on:click="saveInfo();" ref="saveInfo" disabled>Отправить на проверку</md-button>
-		<md-button class="md-raised button-edit md-accent" v-on:click="cancelInfo();" ref="cancelInfo" disabled>Отменить</md-button>
+		<md-button class="md-raised button-edit" v-on:click="editInfo();" ref="changeInfo">Edit</md-button>
+		<md-button class="md-raised button-edit md-primary" v-on:click="saveInfo();" ref="saveInfo" disabled>Send for verification</md-button>
+		<md-button class="md-raised button-edit md-accent" v-on:click="cancelInfo();" ref="cancelInfo" disabled>Cancel</md-button>
 		<div>
 			<md-button class="md-raised button-admin md-primary" v-on:click="publishCompany();" ref="publishInfo">Publish</md-button>
 			<md-button class="md-raised button-admin md-accent" v-on:click="declineCompany();" ref="declineInfo">Decline</md-button>

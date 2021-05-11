@@ -1,10 +1,10 @@
 package com.docholder.controllers;
 
-import com.docholder.model.CompanyMapper;
-import com.docholder.model.Document;
-import com.docholder.model.DocumentDto;
-import com.docholder.model.DocumentMapper;
+import com.docholder.model.*;
+import com.docholder.repository.CompanyRepository;
+import com.docholder.repository.DocumentRepository;
 import com.docholder.repository.FtpRepository;
+import com.docholder.repository.UserRepository;
 import com.docholder.service.CompanyService;
 import com.docholder.service.DocumentService;
 import com.sun.istack.NotNull;
@@ -13,7 +13,6 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,6 +36,10 @@ import java.util.UUID;
 public class DocumentController {
     private final DocumentService documentService;
     private final DocumentMapper documentMapper;
+    private final DocumentRequestMapper documentRequestMapper;
+    private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
+    private final DocumentRepository documentRepository;
 
     //    public ResponseEntity<?> putDocument(@RequestParam UUID id, @RequestPart("file") MultipartFile file){
     @PreAuthorize("hasPermission(new com.docholder.utilities.DocumentSecurityTransfer(#documentDto, #token, null), 'putDocument')")
@@ -83,6 +86,49 @@ public class DocumentController {
         return documents != null && !documents.isEmpty()
                 ? new ResponseEntity<>(documents, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PreAuthorize("hasPermission(#token, 'tokenValidate')")
+    @PostMapping(value = "/request")
+    public ResponseEntity<?> request(@RequestBody DocumentRequest documentRequest, @RequestParam String token){
+
+        return documentService.request(documentRequest)
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+    }
+    @GetMapping(value = "/requestByCompany")
+    public ResponseEntity<?> getRequestsByCompany(@RequestParam(name = "company_id") UUID companyId){
+        List<DocumentRequest> documentRequests = documentService.getRequestsByCompany(companyId);
+        List<DocumentRequestDto> documentRequestsDto = documentRequestMapper.entityToDto(documentRequests);
+        documentRequestsDto.stream().forEach(documentRequestDto -> {
+            documentRequestDto.setCompany_name( companyRepository.getOne(documentRequestDto.getCompany_id()).getName() );
+            documentRequestDto.setUser_name( userRepository.getOne(documentRequestDto.getUser_id()).getName() );
+            documentRequestDto.setDocument_name( documentRepository.getOne(documentRequestDto.getDocument_id()).getName() );
+        });
+        return new ResponseEntity<>(documentRequestsDto, HttpStatus.OK);
+    }                   ////// this we can unite to one method
+    @GetMapping(value = "/requestByUser")
+    public ResponseEntity<?> getRequestsByUser(@RequestParam(name = "user_id") UUID userId){
+        List<DocumentRequest> documentRequests = documentService.getRequestsByUser(userId);
+        List<DocumentRequestDto> documentRequestsDto = documentRequestMapper.entityToDto(documentRequests);
+        documentRequestsDto.stream().forEach(documentRequestDto -> {
+            documentRequestDto.setCompany_name( companyRepository.getOne(documentRequestDto.getCompany_id()).getName() );
+            documentRequestDto.setUser_name( userRepository.getOne(documentRequestDto.getUser_id()).getName() );
+            documentRequestDto.setDocument_name( documentRepository.getOne(documentRequestDto.getDocument_id()).getName() );
+        });
+        return new ResponseEntity<>(documentRequestsDto, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasPermission(new com.docholder.utilities.DocumentSecurityTransfer(null, #token, #id), 'setStatusDocumentRequest')")
+    @PostMapping(value = "/request/status")
+    public ResponseEntity<?> setRequestStatus(
+            @RequestParam UUID id,
+            @RequestParam NoticeStatus status,
+            @RequestParam String token)
+    {
+        return documentService.setRequestStatus(id, status)
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
 }

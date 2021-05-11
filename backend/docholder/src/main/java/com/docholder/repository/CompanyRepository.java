@@ -19,6 +19,6 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
 //    @Query("SELECT u FROM User u WHERE (u.email = :email)")
 //    User findUserByEmail(@Param("email") String email);
 
-    Page<Company> findAllByStatus(CompanyStatus status, Pageable pageable);
-    long countAllByStatus(CompanyStatus status);
+    Page<Company> findAllByStatusAndNameContains(CompanyStatus status, String name, Pageable pageable);
+    long countAllByStatusAndNameContains(CompanyStatus status, String name);
 }

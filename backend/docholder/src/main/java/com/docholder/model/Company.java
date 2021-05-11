@@ -34,7 +34,6 @@ public class Company {
     @Enumerated(EnumType.STRING)
     private CompanyStatus status;
 
-//    @PrimaryKeyJoinColumn
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name="error_id")
     private CompanyValidationErrors errorId;

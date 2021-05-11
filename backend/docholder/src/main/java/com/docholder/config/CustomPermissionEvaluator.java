@@ -2,9 +2,12 @@ package com.docholder.config;
 
 import com.docholder.model.*;
 import com.docholder.repository.DocumentRepository;
+import com.docholder.repository.DocumentRequestRepository;
+import com.docholder.repository.JobOfferRepository;
 import com.docholder.service.DocumentService;
 import com.docholder.service.DocumentServiceImpl;
 import com.docholder.utilities.DocumentSecurityTransfer;
+import com.docholder.utilities.JobOfferSecurityTransfer;
 import com.docholder.utilities.Jwt;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,8 @@ import java.util.UUID;
 public class CustomPermissionEvaluator implements PermissionEvaluator {
     private final DocumentService documentService;
     private final DocumentMapper documentMapper;
+    private final JobOfferRepository jobOfferRepository;
+    private final DocumentRequestRepository documentRequestRepository;
     private final Jwt jwt;
 
     @Override
@@ -36,9 +41,18 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             return false;
         }
 
+        if(permission.toString().equals("tokenValidate")){
+            try {
+                return jwt.isValid(obj.toString());
+            } catch (Exception e){
+                System.out.println("catch error during hasPermission() at tokenValidate()");
+                return false;
+            }
+        }
+
         if(permission.toString().equals("createCompany")){
             try {
-                return createCompanyPermission( (String) obj);
+                return createCompanyPermission( obj.toString() );
             } catch (Exception e){
                 System.out.println("catch error during hasPermission() at createCompany");
                 return false;
@@ -46,7 +60,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         }
         if(permission.toString().equals("updateCompany")){
             try {
-                return updateCompanyPermission( (String) obj);
+                return updateCompanyPermission( obj.toString() );
             } catch (Exception e){
                 System.out.println("catch error during hasPermission() at createCompany");
                 return false;
@@ -54,7 +68,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         }
         if(permission.toString().equals("updateCompanyStatus")){
             try {
-                return updateCompanyStatusPermission( (String) obj);
+                return updateCompanyStatusPermission( obj.toString() );
             } catch (Exception e){
                 System.out.println("catch error during hasPermission() at updateCompanyStatus");
                 return false;
@@ -63,7 +77,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 
         if(permission.toString().equals("putDocument")){
             try {
-                return modifyDocumentPermission( (DocumentSecurityTransfer) obj);
+                return modifyDocumentPermission( (DocumentSecurityTransfer) obj );
             } catch (Exception e){
 //                e.printStackTrace();
                 System.out.println("catch error during hasPermission() at modifyDocument");
@@ -72,7 +86,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         }
         if(permission.toString().equals("readDocument")){
             try {
-                return readDocumentPermission( (DocumentSecurityTransfer) obj);
+                return readDocumentPermission( (DocumentSecurityTransfer) obj );
             } catch (Exception e){
                 e.printStackTrace();
                 System.out.println("catch error during hasPermission() at readDocument");
@@ -81,9 +95,32 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         }
         if(permission.toString().equals("deleteDocument")){
             try {
-                return modifyDocumentPermission( (DocumentSecurityTransfer) obj);
+                return modifyDocumentPermission( (DocumentSecurityTransfer) obj );
             } catch (Exception e){
+//                e.printStackTrace();
                 System.out.println("catch error during hasPermission() at deleteDocument");
+                return false;
+            }
+        }
+
+        if(permission.toString().equals("setJobOfferStatus")){
+            try {
+                return modifyJobOfferStatusPermission( (JobOfferSecurityTransfer) obj );
+            } catch (Exception e){
+                System.out.println("catch error during hasPermission() at modifyJobOfferStatus()");
+                return false;
+            }
+        }
+
+        if(permission.toString().equals("setStatusDocumentRequest")){
+            try {
+//                replace request_id with document_id
+                DocumentSecurityTransfer docTrans = (DocumentSecurityTransfer) obj;
+                docTrans.setId( documentRequestRepository.getOne( docTrans.getId() ).getDocument_id() );
+                return modifyDocumentPermission( docTrans );
+            } catch (Exception e){
+//                e.printStackTrace();
+                System.out.println("catch error during hasPermission() at setStatusDocumentRequest()");
                 return false;
             }
         }
@@ -148,17 +185,37 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         if( !jwt.isValid(token) ) return false;
         Map<String, Object> user = jwt.getData(token);
 
-        if( !user.get("company_id").equals(document.getCompany_id()) ) return false;
+        if(user.get("role").equals("ADMINISTRATOR")) return true;
+
+        DocumentRequest request = documentService.getRequestByUserAndDocument(UUID.fromString(user.get("id").toString()), id);
+        if(request != null) {
+            if (request.getStatus() == NoticeStatus.ACCEPTED)
+                return true;
+        }
+
+        if( !document.getCompany_id().equals(user.get("company_id")) ) return false;
 
         return user.get("role").equals(document.getRole_read().toString())
                 || user.get("role").equals("DIRECTOR")
                 || user.get("role").equals("ADMINISTRATOR");
     }
 
+    private boolean modifyJobOfferStatusPermission( JobOfferSecurityTransfer jobOfferSecurityTransfer ){
+        UUID id = jobOfferSecurityTransfer.getId();
+        String token = jobOfferSecurityTransfer.getToken();
+
+        if( !jwt.isValid(token) ) return false;
+        Map<String, Object> user = jwt.getData(token);
+        UUID userId = UUID.fromString(user.get("id").toString());
+
+        if(!jobOfferRepository.getOne(id).getUser_id().equals( userId )) return false;
+
+        return true;
+    }
 
 
 
-//    I don't sure for what this method, therefore always return false
+
     @Override
     public boolean hasPermission(
             Authentication auth, Serializable targetId, String targetType, Object permission) {

@@ -1,10 +1,16 @@
 <template>
 	<div>
-		<md-table v-model="searched" md-sort="name" md-sort-order="asc" md-card md-fixed-header>
+		<md-table v-model="searched" md-sort="name" md-sort-order="asc" md-card>
 			<md-table-toolbar>
 				<div class="md-toolbar-section-start">
 					<h1 class="md-title">Companies</h1>
 				</div>
+				<md-field md-clearable class="md-toolbar-section-end">
+					<md-input v-on:keyup.enter="updateTable()" placeholder="Search company by name..." v-model="search"></md-input>
+				</md-field>
+				<md-button class="md-toolbar-section-end search-button" @click="updateTable()">
+						Search
+				</md-button>
 			</md-table-toolbar>
 
 			<md-table-row slot="md-table-row" slot-scope="{ item }"
@@ -48,22 +54,30 @@
 export default {
 	name: 'TableSearch',
 	data: () => ({
-		search: null,
+		search: '',
 		searched: [],
 		companiesPerPage: 4,
 		pageNumber: 1,
 		pageColumn: 1,
 		companies_data: []
 	}),
+	created: function () {
+		document.title = "Home Page";
+	},
 	mounted: function () {
 		if(localStorage.role == "ADMINISTRATOR"){
 			this.$router.push('/mainPageAdmin');
 		}
-		this.companies_data = this.getCompanies();
-		this.pageColumn = this.getPageColumn();
-		this.searched = this.companies_data;
+		
+		this.updateTable();
 	},
 	methods: {
+		updateTable(){
+            this.companies_data = this.getCompanies();
+            this.pageColumn = this.getPageColumn();
+            this.searched = this.companies_data;
+        },
+
 		goToCompany(id){
 			this.$router.push("company?id="+id);
 		},
@@ -72,7 +86,8 @@ export default {
 			this.$http(
 				{
 					method: 'get',
-					url: 'http://localhost:8082/company/published?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1),
+					// url: 'http://localhost:8082/company/published?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1),
+					url: 'http://localhost:8082/company/published?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1) + '&filter=' + this.search,
 					headers: {
 						"Content-type": "application/json; charset=UTF-8"
 					}
@@ -99,7 +114,7 @@ export default {
 				})
 				.catch(function (error) {
 					console.log("catch error : " + error);
-					alert("No company authorized in our service yet. Create one and come back");
+					alert("No company found");
 					return error;
 				});
 			return data;
@@ -108,7 +123,7 @@ export default {
 			var query = this.$http(
 				{
 					method: 'get',
-					url: 'http://localhost:8082/company/countPublished',
+					url: 'http://localhost:8082/company/countPublished?filter=' + this.search,
 					headers: {
 						"Content-type": "application/json; charset=UTF-8"
 					}
@@ -151,7 +166,7 @@ export default {
 			this.pageNumber--;
 			this.companies_data = this.getCompanies();
 			this.searched = this.companies_data;
-		}
+		},
 	},
 }
 </script>
@@ -189,5 +204,14 @@ export default {
 }
 .page_selected {
 	background: #2c3e50;
+}
+
+.search-button{
+	max-width: 100px !important;
+}
+/*md-content md-table-content md-scrollbar*/
+.md-table .md-content{
+	border: 10px solid red !important;
+	/*max-height: none !important;*/
 }
 </style>

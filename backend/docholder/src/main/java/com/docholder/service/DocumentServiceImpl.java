@@ -1,7 +1,9 @@
 package com.docholder.service;
 
-import com.docholder.model.Document;
+import com.docholder.model.*;
+import com.docholder.repository.CompanyRepository;
 import com.docholder.repository.DocumentRepository;
+import com.docholder.repository.DocumentRequestRepository;
 import com.docholder.repository.FtpRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.net.ftp.FTP;
@@ -21,6 +23,8 @@ public class DocumentServiceImpl implements DocumentService{
 
     private final FtpRepository ftpRepository;
     private final DocumentRepository documentRepository;
+    private final DocumentRequestRepository documentRequestRepository;
+    private final CompanyRepository companyRepository;
 
     @Override
     public boolean putDocument(Document document, MultipartFile file) {
@@ -112,6 +116,57 @@ public class DocumentServiceImpl implements DocumentService{
             return null;
         }
     }
+
+    @Override
+    public boolean request(DocumentRequest documentRequest){
+
+        try {
+//            check for unique
+            DocumentRequest requestByAllInfo = documentRequestRepository.findByAllInfo(
+                    documentRequest.getUser_id(),
+                    documentRequest.getCompany_id(),
+                    documentRequest.getDocument_id()
+            );
+
+            if (requestByAllInfo != null){
+                requestByAllInfo.setMessage(documentRequest.getMessage());
+                requestByAllInfo.setStatus(NoticeStatus.NOT_ANSWERED);
+                documentRequestRepository.save(requestByAllInfo);
+            }else{
+                documentRequestRepository.save(documentRequest);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+    @Override
+    public List<DocumentRequest> getRequestsByCompany(UUID companyId){
+        return documentRequestRepository.findAllByCompany_id(companyId);
+    }
+    @Override
+    public List<DocumentRequest> getRequestsByUser(UUID userId){
+        return documentRequestRepository.findAllByUser_id(userId);
+    }
+    @Override
+    public DocumentRequest getRequestByUserAndDocument(UUID userId, UUID documentId){
+        return documentRequestRepository.getOneByUser_idAndDocument_id(userId, documentId);
+    }
+    @Override
+    public boolean setRequestStatus(UUID id, NoticeStatus status){
+        try{
+            DocumentRequest request = documentRequestRepository.getOne(id);
+            request.setStatus(status);
+            documentRequestRepository.save(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
 
 
 

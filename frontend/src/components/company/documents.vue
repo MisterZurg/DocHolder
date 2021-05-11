@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<md-button class="md-primary md-raised button-edit" ref="newDocumentButton" @click="showUploadDocument = true">Upload new document</md-button>
-		<div class="md-title">Директорат</div>
+		<div class="md-title">Directors</div>
 		<div class="document-container">
 			<div class="document md-elevation-3" v-for="document in documentsDirector" :key="document.id">
 				<div class="icon icon-pdf">
@@ -11,7 +11,7 @@
 				<div class="actions-bar">
 					<div class="action request">
 						<font-awesome-icon icon="at" title="Request"
-						@click="requestDocument(document.id, document.role_read)" />
+						@click="requestDocument(document.id, document.name, document.role_read)" />
 					</div>
 					<div class="action edit">
 						<font-awesome-icon icon="eye" title="Preview (pdf only)"
@@ -28,7 +28,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="md-title">Бухгалтерия</div>
+		<div class="md-title">Accountants</div>
 		<div class="document-container">
 			<div class="document md-elevation-3" v-for="document in documentsAccountant" :key="document.id">
 				<div class="icon icon-pdf">
@@ -38,7 +38,7 @@
 				<div class="actions-bar">
 					<div class="action request">
 						<font-awesome-icon icon="at" title="Request"
-						@click="requestDocument(document.id, document.role_read)" />
+						@click="requestDocument(document.id, document.name, document.role_read)" />
 					</div>
 					<div class="action edit">
 						<font-awesome-icon icon="eye" title="Preview (pdf only)"
@@ -55,7 +55,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="md-title">Остальные сотрудники</div>
+		<div class="md-title">Other employees</div>
 		<div class="document-container">
 			<div class="document md-elevation-3" v-for="document in documentsRegular" :key="document.id">
 				<div class="icon icon-pdf">
@@ -65,7 +65,7 @@
 				<div class="actions-bar">
 					<div class="action request">
 						<font-awesome-icon icon="at" title="Request"
-						@click="requestDocument(document.id, document.role_read)" />
+						@click="requestDocument(document.id, document.name, document.role_read)" />
 					</div>
 					<div class="action edit">
 						<font-awesome-icon icon="eye" title="Preview (pdf only)"
@@ -82,7 +82,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="md-title">Общедоступные документы</div>
+		<div class="md-title">Public documents</div>
 		<div class="document-container">
 			<div class="document md-elevation-3" v-for="document in documentsRegularUnemployed" :key="document.id">
 				<div class="icon icon-pdf">
@@ -92,7 +92,7 @@
 				<div class="actions-bar">
 					<div class="action request">
 						<font-awesome-icon icon="at" title="Request"
-						@click="requestDocument(document.id, document.role_read)" />
+						@click="requestDocument(document.id, document.name, document.role_read)" />
 					</div>
 					<div class="action edit">
 						<font-awesome-icon icon="eye" title="Preview (pdf only)"
@@ -109,6 +109,33 @@
 				</div>
 			</div>
 		</div>
+
+
+		<md-table v-model="requests" md-sort="name" md-sort-order="asc" md-card md-fixed-header ref="requestTable">
+			<md-table-toolbar>
+				<div class="md-toolbar-section-start">
+					<h1 class="md-title">Documents request</h1>
+				</div>
+			</md-table-toolbar>
+
+			<md-table-row slot="md-table-row" slot-scope="{ item }">
+				<md-table-cell md-label="Who" md-sort-by="namename">
+					<a :href="'profile?id='+item.user_id">{{ item.user_name }}</a>
+				</md-table-cell>
+				<md-table-cell md-label="Document" md-sort-by="document">{{ item.document_name }}</md-table-cell>
+				<md-table-cell md-label="Message">{{ item.message }}</md-table-cell>
+				<md-table-cell md-label="Status">{{ item.status }}</md-table-cell>
+				<md-table-cell md-label="Actions">
+					<md-button class="md-raised md-primary" :class="'buttons'+item.status" @click="setDocumentRequestStatus(item.id, 'ACCEPTED')">
+						Accept
+					</md-button>
+					<md-button class="md-raised md-accent" :class="'buttons'+item.status" @click="setDocumentRequestStatus(item.id, 'DECLINED')">
+						Decline
+					</md-button>
+				</md-table-cell>
+			</md-table-row>
+		</md-table>
+
 
 		<md-dialog :md-active.sync="showUploadDocument">
 			<md-dialog-title>Upload document</md-dialog-title>
@@ -138,6 +165,23 @@
 				<md-button class="md-primary" @click="showReadDocument=false">Close</md-button>
 			</md-dialog-actions>
 		</md-dialog>
+		<md-dialog :md-active.sync="showDocumentRequest">
+			<md-dialog-title>Request</md-dialog-title>
+			<md-dialog-content>
+				<md-field>
+					<label>Document name</label>
+					<md-input v-model="requestName" disabled></md-input>
+				</md-field>
+				<md-field>
+					<label>Message</label>
+					<md-textarea v-model="requestMessage"></md-textarea>
+				</md-field>
+			</md-dialog-content>
+			<md-dialog-actions>
+				<md-button class="md-primary" @click="closeRequestBox();">Close</md-button>
+				<md-button class="md-primary" @click="sendRequestBox();">Send</md-button>
+			</md-dialog-actions>
+		</md-dialog>
 	</div>
 </template>
 
@@ -156,7 +200,13 @@ export default {
 			newDocumentPublic: false,
 			newDocumentFile: null,
 			documentBinary: null,
-			urlPdf: null
+			urlPdf: null,
+
+			showDocumentRequest: false,
+			requestId: null,
+			requestName: null,
+			requestMessage: null,
+			requests: [],
 		}
 	},
 	computed: {
@@ -184,7 +234,8 @@ export default {
 	mounted: function() {
 		if(this.$route.query.id != undefined){
 			this.getDocuments();
-			this.showUploadButton();
+			this.showUploadButtonAndTable();
+			this.getRequest();
 		}
 	},
 	methods:{
@@ -265,9 +316,10 @@ export default {
 		setDocumentBinary(evt) {
 			this.documentBinary = evt[0];
 		},
-		showUploadButton(){
+		showUploadButtonAndTable(){
 			if(localStorage.company_id == this.$route.query.id){
 				this.$refs.newDocumentButton.$el.style.display = "inline-block";
+				this.$refs.requestTable.$el.style.display = "block";
 			}
 		},
 		uploadDocument(){
@@ -376,17 +428,143 @@ export default {
 				}
 			});
 		},
-		requestDocument(id, documentRole){
-			console.log(id);
-			if(localStorage.role == documentRole ||
-				localStorage.role == "DIRECTOR" ||
-				localStorage.role == "ADMINISTRATOR")
+
+		requestDocument(id, name, documentRole){
+			// if (!confirm("Are you sure you want to request this document?")) return;
+
+			if (localStorage.token == undefined) {
+				alert("You should authorized before");
+				return;
+			}
+			
+			if(this.$route.query.id == localStorage.company_id &&
+				(
+					localStorage.role == documentRole ||
+					localStorage.role == "DIRECTOR" ||
+					localStorage.role == "ADMINISTRATOR"
+				) ||
+				documentRole == "REGULAR_UNEMPLOYED")
 			{
 				alert("You already have permission to this file");
 				return;
 			}
-			alert("This functional is not avaliable now");
+
+			this.showDocumentRequest = true;
+
+			this.requestName = name;
+			this.requestId = id;
 		},
+		sendRequestBox(){
+			var query = this.$http(
+			{
+				method: 'post',
+				url: 'http://localhost:8082/document/request?token='+localStorage.token,
+				data: {
+					"user_id": localStorage.id,
+					"company_id": this.$route.query.id,
+					"document_id": this.requestId,
+					"message": this.requestMessage
+				},
+				headers: {
+					"Content-type": "application/json; charset=UTF-8"
+				}
+			})
+			.then(function(response) {return response;})
+			.catch(function(error) {return error.response;});
+
+			query.then((response) => {
+				let status = response.status;
+
+				if(status == 304){
+					alert("This document can't be requested. It may be error. Please contact with administrator");
+					return;
+				}else if(status == 200){
+					alert("The request was send. All your requests you can see at your profile");
+					
+					if(localStorage.company_id == this.$route.query.id){
+						this.getRequest();
+					}
+				}else{
+					console.log("catch unresolve error:"+status);
+				}
+			});
+			
+			this.closeRequestBox();
+		},
+		closeRequestBox(){
+			this.requestId = null;
+			this.requestName = null;
+			this.requestMessage = null;
+			this.showDocumentRequest = false;
+		},
+
+		getRequest(){
+			var query = this.$http(
+			{
+				method: 'get',
+				url: 'http://localhost:8082/document/requestByCompany?company_id='+this.$route.query.id,
+				headers: {
+					"Content-type": "application/json; charset=UTF-8"
+				}
+			})
+			.then(function(response) {return response;})
+			.catch(function(error) {return error.response;});
+
+			query.then((response) => {
+				let status = response.status;
+
+				if(status == 404){
+					// alert("This user doesn't exist");
+					return;
+				}
+					
+				if(status == 200){
+					let data = response.data;
+					console.log(data);
+					this.requests = data;
+				}
+			});
+		},
+		setDocumentRequestStatus(id, status){
+
+			if (status == "ACCEPTED"){
+				if (!confirm("Are you sure you want to accept this request?")) return;
+			}else if (status == "DECLINED"){
+				if (!confirm("Are you sure you want to decline this request?")) return;
+			}
+
+			var query = this.$http(
+			{
+				method: 'post',
+				url: 'http://localhost:8082/document/request/status?id='+id+'&status='+status+'&token='+localStorage.token,
+				headers: {
+					"Content-type": "application/json; charset=UTF-8"
+				}
+			})
+			.then(function(response) {return response;})
+			.catch(function(error) {return error.response;});
+
+			query.then((response) => {
+				let status = response.status;
+
+				if(status == 304){
+					alert("This request can't be modified. It may be error. Please contact with administrator");
+					return;
+				}else if(status == 403){
+					alert("You haven't permission for this action");
+					return;
+				}else if(status == 200){
+					alert("Success");
+					this.getRequest();
+					console.log(response.data);
+				}else{
+					console.log("catch unresolve error:"+status);
+				}
+
+			});
+		},
+
+
 		deleteDocument(id){
 			if (!confirm("Are you sure you want to delete this document?")) return;
 
@@ -477,9 +655,26 @@ export default {
 	background-color: #222;
 }
 
+.md-table{
+	display: none;
+	margin-top: 50px;
+}
+.md-toolbar-section-start h1{
+	text-align: center;
+}
+
 .document-reader{
 	height: 60vh;
 	width: 70vw;
+}
+
+.buttonsACCEPTED,
+.buttonsDECLINED{
+	visibility: hidden;
+}
+.button-edit{
+	display: none;
+	/*visibility: hidden;*/
 }
 
 

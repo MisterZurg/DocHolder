@@ -1,9 +1,11 @@
 package com.docholder.service;
 
+import com.docholder.model.Company;
 import com.docholder.model.User;
 import com.docholder.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -61,5 +63,19 @@ public class UserServiceImpl implements UserService{
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean updateAvatar(UUID id, MultipartFile avatar){
+        User user = userRepository.getOne(id);
+
+        try {
+            user.setAvatar(avatar.getBytes());
+            userRepository.save(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

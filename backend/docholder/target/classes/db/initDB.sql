@@ -57,6 +57,30 @@ CREATE TABLE IF NOT EXISTS documents
     role_read   role_type    NOT NULL DEFAULT 'REGULAR_UNEMPLOYED'::role_type
 );
 
--- При желании удалить таблицу,
--- комментим всё, что выше, расскоментим все что ниже:
--- DROP TABLE IF EXISTS users
+CREATE TYPE noticeStatus_type AS ENUM(
+    'ACCEPTED',
+    'NOT_ANSWERED',
+    'DECLINED'
+    );
+
+CREATE TABLE IF NOT EXISTS job_offer
+(
+    id          UUID PRIMARY KEY,
+    user_id     UUID        NOT NULL,
+    company_id  UUID        NOT NULL,
+    employer_id UUID        NOT NULL,
+    role        role_type   DEFAULT 'REGULAR'::role_type,
+    message     TEXT        DEFAULT NULL,
+    status      noticeStatus_type NOT NULL DEFAULT 'NOT_ANSWERED'::noticeStatus_type
+);
+
+CREATE TABLE IF NOT EXISTS document_requests
+(
+    id          UUID PRIMARY KEY,
+    user_id     UUID        NOT NULL,
+    company_id  UUID        NOT NULL,
+    document_id UUID        NOT NULL,
+    message     TEXT        DEFAULT NULL,
+    status      noticeStatus_type NOT NULL DEFAULT 'NOT_ANSWERED'::noticeStatus_type
+);
+

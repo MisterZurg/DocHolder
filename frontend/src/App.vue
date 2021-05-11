@@ -78,7 +78,10 @@
 	
 						<div class="profile-mover" @click="moveToProfile();">
 						<md-card-content>
-							<md-avatar class="md-avatar-icon md-primary">{{name[0]}}</md-avatar>
+							<!-- <md-avatar class="md-avatar-icon md-primary">{{name[0]}}</md-avatar> -->
+							<md-avatar class="md-avatar-icon">
+								<img :src="useravatar">
+							</md-avatar>
 							<span class="md-subheading profile-name">{{name}} {{surname}}</span>
 						</md-card-content>
 						</div>
@@ -86,7 +89,7 @@
 						<md-card-actions>
 							<md-button @click="createCompany();">Create company</md-button>
 							<md-button @click="moveToCompany();">Go to company</md-button>
-							<md-button @click="logout();">logout</md-button>
+							<md-button @click="logout();">Logout</md-button>
 						</md-card-actions>
 					</md-ripple>
 				</md-card>
@@ -137,7 +140,8 @@ export default {
 	data: () => ({
 		menuVisible: false,
 		name: "",
-		surname: ""
+		surname: "",
+		useravatar: '',
 	}),
 	// data() {
 	//     return{
@@ -165,8 +169,8 @@ export default {
 				method: 'post',
 				url: 'http://localhost:8082/company?token='+localStorage.token,
 				data: {
-					"name": "Имя компании",
-					"description": "Описание",
+					"name": "Company name",
+					"description": "Description",
 					"CompanyStatus": "DRAFT"
 				},
 				headers: {
@@ -226,7 +230,6 @@ export default {
 			this.$router.go();
 		},
 		moveToProfile: function(){
-			console.log("move yee moooveee");
 			if(localStorage.id == "undefined" || localStorage.id == undefined){
 				alert("You should authorize before!");
 				return;
@@ -251,6 +254,8 @@ export default {
 				this.$refs.profile.$el.style.display = "block";
 				this.$refs.buttonRegistration.style.display = "none";
 				this.$refs.buttonLogin.style.display = "none";
+
+				this.getUserLogo();
 			}
 		},
 		// logout user if logout button had clicked or JWT expired
@@ -260,6 +265,32 @@ export default {
 			this.$refs.buttonRegistration.style.display = "block";
 			this.$refs.buttonLogin.style.display = "block";
 			this.$router.push('/').catch(()=>{});
+		},
+
+		getUserLogo(){
+			var query = this.$http(
+			{
+				method: 'get',
+				url: 'http://localhost:8082/user/'+localStorage.id,
+				headers: {
+					"Content-type": "application/json; charset=UTF-8"
+				}
+			})
+			.then(function(response) {return response;})
+			.catch(function(error) {return error.response;});
+
+			query.then((response) => {
+				let status = response.status;
+				if(status == 200){
+					let data = response.data;
+					console.log(data);
+					if(data.avatar == null){
+						this.useravatar = "https://rgsport.ru/templates/sports/dleimages/noavatar.png";
+					}else{
+						this.useravatar = "data:image/jpeg;base64," + data.avatar;
+					}
+				}
+			});
 		}
 	}
 }
@@ -283,6 +314,11 @@ export default {
 }
 .profile-name{
 	padding-left: 15px;
+}
+
+.md-avatar img{
+	width: auto !important;
+	max-width: none !important;
 }
 
 </style>

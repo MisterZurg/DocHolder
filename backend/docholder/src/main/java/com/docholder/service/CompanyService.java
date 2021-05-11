@@ -2,6 +2,8 @@ package com.docholder.service;
 
 import com.docholder.model.Company;
 import com.docholder.model.CompanyStatus;
+import com.docholder.model.JobOffer;
+import com.docholder.model.NoticeStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,8 +23,8 @@ public interface CompanyService {
     Company read(UUID id);
 
 
-    long countPublished();
-    Page<Company> findAllPublishedByPage(int limit, int page);
+    long countPublishedByName(String name);
+    Page<Company> findAllPublishedByPageAndName(int limit, int page, String searchName);
 
 //    User readByEmail(String email);
 
@@ -34,4 +36,9 @@ public interface CompanyService {
 
     boolean delete(UUID id);
 
+    boolean invite(JobOffer jobOffer, String email);
+
+    List<JobOffer> getInvitations(UUID userId);
+
+    String setInviteStatus(UUID id, NoticeStatus status);
 }

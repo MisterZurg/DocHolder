@@ -1,6 +1,8 @@
 package com.docholder.service;
 
 import com.docholder.model.Document;
+import com.docholder.model.DocumentRequest;
+import com.docholder.model.NoticeStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -13,5 +15,9 @@ public interface DocumentService {
     boolean deleteDocument(UUID id);
     Document getOneDocumentInfo(UUID id);
     List<Document> getDocumentsByCompany(UUID id);
-
+    boolean request(DocumentRequest documentRequest);
+    List<DocumentRequest> getRequestsByCompany(UUID companyId);
+    List<DocumentRequest> getRequestsByUser(UUID userId);
+    DocumentRequest getRequestByUserAndDocument(UUID userId, UUID documentId);
+    boolean setRequestStatus(UUID id, NoticeStatus status);
 }

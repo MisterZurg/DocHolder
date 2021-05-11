@@ -10,19 +10,19 @@
 
                 <md-card-content>
                     <div class="container-reguser">
-                        <div class="title-reguser">Регистрация</div>
-                        <input type="text" ref="name" placeholder="Имя">
-                        <input type="text" ref="surname" placeholder="Фамилия">
+                        <div class="title-reguser">Sign Up</div>
+                        <input type="text" ref="name" placeholder="First name">
+                        <input type="text" ref="surname" placeholder="Last name">
                         <input type="text" ref="email" placeholder="E-mail">
-                        <input type="password" ref="password" placeholder="Пароль">
-                        <input type="password" ref="dubpassword" placeholder="Повторите пароль">
-                        <input type="text" ref="number" placeholder="Номер">
+                        <input type="password" ref="password" placeholder="Password">
+                        <input type="password" ref="dubpassword" placeholder="Repeate password">
+                        <input type="text" ref="number" placeholder="Phone">
                         <div class="gender-reguser">
-                            <p>Пол:</p>
+                            <p>Gender:</p>
                             <input type="radio" name="gender" value="MALE" id="male" ref="male" checked>
-                            <label for="male">Мужчина</label>
+                            <label for="male">Male</label>
                             <input type="radio" name="gender" value="FEMALE" id="female">
-                            <label for="female">Женщина</label>
+                            <label for="female">Female</label>
                             <!-- <p>фотография</p> -->
                         </div>
 
@@ -34,7 +34,7 @@
                         -->
                         <md-card-actions>
                             <md-button v-on:click="validation">
-                                Register
+                                Sign Up
                             </md-button>
                         </md-card-actions>
                     </div>
@@ -56,7 +56,6 @@
 import bottomHomeBar from './bottom-home-bar'
 
 // const axios = require('axios');
-document.title = "Регистрация";
 export default {
 	name: 'reguser',
     components : {bottomHomeBar},
@@ -65,6 +64,9 @@ export default {
 		return{
 
 		}
+	},
+	created: function () {
+		document.title = "Sign Up";
 	},
 	mounted: function() {},
 	methods: {

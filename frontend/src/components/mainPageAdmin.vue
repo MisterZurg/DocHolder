@@ -56,6 +56,9 @@ export default {
 		pageColumn: 1,
 		companies_data: []
 	}),
+	created: function () {
+		document.title = "Home Page for admin";
+	},
 	mounted: function () {
 		this.companies_data = this.getCompanies();
 		this.pageColumn = this.getPageColumn();

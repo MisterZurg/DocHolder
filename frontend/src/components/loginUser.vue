@@ -14,7 +14,7 @@
 
 					<md-card-actions>
 						<md-button v-on:click="validation">
-							Login
+							Sign In
 						</md-button>
 					</md-card-actions>
 				</md-ripple>
@@ -26,8 +26,6 @@
 <script>
 import bottomHomeBar from './bottom-home-bar'
 
-document.title = "Авторизация";
-
 export default {
 	name: 'reguser',
 	components: {bottomHomeBar},
@@ -36,6 +34,9 @@ export default {
 		return {
 
 		}
+	},
+	created: function () {
+		document.title = "Sign In";
 	},
 	mounted: function () {
 		// localStorage.clear();
@@ -50,7 +51,8 @@ export default {
 			} else {
 				elem.style.border = "1px solid #B00020";
 				elem.style.backgroundColor = "#fee";
-				this.errorText = "Все поля необходимо заполнить корректно";
+				this.errorText = "All inputs should be valid";
+				// return;
 			}
 			return setRight;
 		},
@@ -123,7 +125,6 @@ export default {
 					localStorage.setItem('company_id', payload.company_id);
 				})
 				.catch(function (error) {
-					// console.log(error);
 					return error;
 				});
 
@@ -139,10 +140,10 @@ export default {
 					return;
 				}
 
-				// if no error
-				console.log(this.$root.$children[0]);
-				this.$root.$children[0].login();
-				this.$router.push('/');
+			// if no error
+			// console.log(this.$root.$children[0]);
+			this.$root.$children[0].login();
+			this.$router.push('/');
 			});
 		}
 	}

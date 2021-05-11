@@ -1,9 +1,10 @@
 package com.docholder.service;
 
-import com.docholder.model.Company;
-import com.docholder.model.CompanyStatus;
-import com.docholder.model.CompanyValidationErrors;
+import com.docholder.model.*;
 import com.docholder.repository.CompanyRepository;
+import com.docholder.repository.JobOfferRepository;
+import com.docholder.repository.UserRepository;
+import com.docholder.utilities.Jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,6 +22,10 @@ import java.util.UUID;
 public class CompanyServiceImpl implements CompanyService{
 
     private final CompanyRepository companyRepository;
+    private final JobOfferRepository jobOfferRepository;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final Jwt jwt;
 
     @Override
     public void create(Company company) {
@@ -53,14 +59,14 @@ public class CompanyServiceImpl implements CompanyService{
     }
 
     @Override
-    public long countPublished(){
-        return companyRepository.countAllByStatus(CompanyStatus.PUBLISHED);
+    public long countPublishedByName(String name){
+        return companyRepository.countAllByStatusAndNameContains(CompanyStatus.PUBLISHED, name);
     }
 
     @Override
-    public Page<Company> findAllPublishedByPage(int limit, int page){
+    public Page<Company> findAllPublishedByPageAndName(int limit, int page, String searchName){
         Pageable pageable = PageRequest.of(page, limit);
-        return companyRepository.findAllByStatus(CompanyStatus.PUBLISHED, pageable);
+        return companyRepository.findAllByStatusAndNameContains(CompanyStatus.PUBLISHED, searchName, pageable);
     }
 
     @Override
@@ -121,4 +127,49 @@ public class CompanyServiceImpl implements CompanyService{
         }
         return false;
     }
+
+    @Override
+    public boolean invite(JobOffer jobOffer, String email){
+
+        try {
+            jobOffer.setUser_id( userRepository.findUserByEmail(email).getId() );
+            jobOfferRepository.save(jobOffer);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public List<JobOffer> getInvitations(UUID userId){
+//        return jobOfferRepository.findAllByUser_id(userId);
+        return jobOfferRepository.findAllByUser_id(userId);
+    }
+
+    @Override
+    public String setInviteStatus(UUID id, NoticeStatus status){
+        String newToken = null;
+        try{
+            JobOffer offer = jobOfferRepository.getOne(id);
+            offer.setStatus(status);
+            jobOfferRepository.save(offer);
+
+            if (status == NoticeStatus.ACCEPTED){
+                User user = userRepository.getOne(offer.getUser_id());
+                user.setCompany_id( offer.getCompany_id() );
+                user.setRole( offer.getRole() );
+                userRepository.save(user);
+
+                newToken = jwt.generateTokenByUser( userMapper.entityToDto(user) );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return newToken;
+    }
+
 }

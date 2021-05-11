@@ -31,7 +31,7 @@ public class UserController {
     public ResponseEntity<?> create(@RequestBody UserDto userDto) {
         User user = userMapper.dtoToEntity(userDto);
         user.setPassword(encrypt.sha256(user.getPassword()));
-        user.setRole(UserRole.REGULAR);
+        user.setRole(UserRole.REGULAR_UNEMPLOYED);
 
         if(userService.readByEmail(user.getEmail()) != null){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -91,33 +91,36 @@ public class UserController {
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<?> update(@RequestBody UserDto userDto) {
-        User user = userMapper.dtoToEntity(userDto);
-        final boolean updated = userService.update(user, user.getId());
+//    @PutMapping(value = "/{id}")
+//    public ResponseEntity<?> update(@RequestBody UserDto userDto) {
+//        User user = userMapper.dtoToEntity(userDto);
+//        final boolean updated = userService.update(user, user.getId());
+//
+//        return updated
+//                ? new ResponseEntity<>(HttpStatus.OK)
+//                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+//    }
 
-        return updated
+//    @DeleteMapping(value = "/{id}")
+//    public ResponseEntity<?> delete(@PathVariable(name = "id") UUID id) {
+//        final boolean deleted = userService.delete(id);
+//
+//        return deleted
+//                ? new ResponseEntity<>(HttpStatus.OK)
+//                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+//    }
+
+//    @PreAuthorize("hasPermission(#token, 'updateCompany')")
+    @PostMapping(value = "/avatar", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> updateAvatar(
+            @RequestParam("id") UUID id,
+            @RequestParam String token,
+            @RequestPart("file") MultipartFile avatar)
+    {
+//        userService.updateAvatar(id, avatar);
+        return userService.updateAvatar(id, avatar)
                 ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> delete(@PathVariable(name = "id") UUID id) {
-        final boolean deleted = userService.delete(id);
-
-        return deleted
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
-    }
-
-
-
-
-
-//  for testing spring security's role access
-    @PreAuthorize("hasPermission(#userDto, 'write')")
-    @PostMapping(value ="/securetest")
-    public ResponseEntity<?> securetest(@RequestBody UserDto userDto) {
-        return authorization(userDto);
-    }
 }
