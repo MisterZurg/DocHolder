@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,10 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.Lob;
 import javax.print.Doc;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/document")
@@ -96,26 +95,47 @@ public class DocumentController {
                 ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
-    @GetMapping(value = "/requestByCompany")
-    public ResponseEntity<?> getRequestsByCompany(@RequestParam(name = "company_id") UUID companyId){
-        List<DocumentRequest> documentRequests = documentService.getRequestsByCompany(companyId);
+//    @GetMapping(value = "/requestByCompany")
+//    public ResponseEntity<?> getRequestsByCompany(@RequestParam(name = "company_id") UUID companyId){
+
+//        List<DocumentRequestDto> documentRequestsDto = documentRequestMapper.entityToDto(documentRequests);
+//        documentRequestsDto.stream().forEach(documentRequestDto -> {
+//            documentRequestDto.setCompany_name( companyRepository.getOne(documentRequestDto.getCompany_id()).getName() );
+//            documentRequestDto.setUser_name( userRepository.getOne(documentRequestDto.getUser_id()).getName() );
+//            documentRequestDto.setDocument_name( documentRepository.getOne(documentRequestDto.getDocument_id()).getName() );
+//        });
+//        return new ResponseEntity<>(documentRequestsDto, HttpStatus.OK);
+//    }
+    @GetMapping(value = "/requests")
+    public ResponseEntity<?> getRequests(
+            @RequestParam(name = "user_id") @Nullable UUID userId,
+            @RequestParam(name = "company_id") @Nullable UUID companyId)
+    {
+        List<DocumentRequest> documentRequests;
+
+        if (companyId == null)
+            documentRequests = documentService.getRequestsByUser(userId);
+        else if (userId == null)
+            documentRequests = documentService.getRequestsByCompany(companyId);
+        else
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        List<UUID> companyUUIDs = documentRequests.stream().map(DocumentRequest::getCompanyId).collect(Collectors.toList());
+        Map<UUID, String> companyMap = companyRepository.findAllById(companyUUIDs).stream().collect(Collectors.toMap(Company::getId, Company::getName));
+
+        List<UUID> userUUIDs = documentRequests.stream().map(DocumentRequest::getUserId).collect(Collectors.toList());
+        Map<UUID, String> userMap = userRepository.findAllById(userUUIDs).stream().collect(Collectors.toMap(User::getId, user -> user.getName()+" "+user.getSurname()));
+
+        List<UUID> documentUUIDs = documentRequests.stream().map(DocumentRequest::getDocumentId).collect(Collectors.toList());
+        Map<UUID, String> documentMap = documentRepository.findAllById(documentUUIDs).stream().collect(Collectors.toMap(Document::getId, Document::getName));
+
         List<DocumentRequestDto> documentRequestsDto = documentRequestMapper.entityToDto(documentRequests);
-        documentRequestsDto.stream().forEach(documentRequestDto -> {
-            documentRequestDto.setCompany_name( companyRepository.getOne(documentRequestDto.getCompany_id()).getName() );
-            documentRequestDto.setUser_name( userRepository.getOne(documentRequestDto.getUser_id()).getName() );
-            documentRequestDto.setDocument_name( documentRepository.getOne(documentRequestDto.getDocument_id()).getName() );
+        documentRequestsDto.forEach(documentRequestDto -> {
+            documentRequestDto.setCompanyName( companyMap.get(documentRequestDto.getCompanyId()) );
+            documentRequestDto.setUserFullName( userMap.get(documentRequestDto.getUserId()) );
+            documentRequestDto.setDocumentName( documentMap.get(documentRequestDto.getDocumentId()) );
         });
-        return new ResponseEntity<>(documentRequestsDto, HttpStatus.OK);
-    }                   ////// this we can unite to one method
-    @GetMapping(value = "/requestByUser")
-    public ResponseEntity<?> getRequestsByUser(@RequestParam(name = "user_id") UUID userId){
-        List<DocumentRequest> documentRequests = documentService.getRequestsByUser(userId);
-        List<DocumentRequestDto> documentRequestsDto = documentRequestMapper.entityToDto(documentRequests);
-        documentRequestsDto.stream().forEach(documentRequestDto -> {
-            documentRequestDto.setCompany_name( companyRepository.getOne(documentRequestDto.getCompany_id()).getName() );
-            documentRequestDto.setUser_name( userRepository.getOne(documentRequestDto.getUser_id()).getName() );
-            documentRequestDto.setDocument_name( documentRepository.getOne(documentRequestDto.getDocument_id()).getName() );
-        });
+
         return new ResponseEntity<>(documentRequestsDto, HttpStatus.OK);
     }
 

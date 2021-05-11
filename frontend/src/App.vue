@@ -174,6 +174,7 @@ export default {
 					"CompanyStatus": "DRAFT"
 				},
 				headers: {
+					// authorization
 					"Content-type": "application/json; charset=UTF-8"
 				}
 			})
@@ -216,8 +217,8 @@ export default {
 					localStorage.setItem('role', payload.role);
 					localStorage.setItem('gender', payload.gender);
 					localStorage.setItem('company_id', payload.company_id);
-					// // later we should post new authorization automatically!!!
-					// // this.logout();
+					
+					this.moveToCompany();
 				}
 			});
 		},

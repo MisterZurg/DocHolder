@@ -111,18 +111,23 @@
 		</div>
 
 
-		<md-table v-model="requests" md-sort="name" md-sort-order="asc" md-card md-fixed-header ref="requestTable">
+		<md-table v-model="requests" md-sort="name" md-sort-order="asc" md-card ref="requestTable">
 			<md-table-toolbar>
 				<div class="md-toolbar-section-start">
 					<h1 class="md-title">Documents request</h1>
 				</div>
 			</md-table-toolbar>
 
+			<md-table-empty-state
+				md-label="No document requests found"
+				:md-description="`Maybe later someone send a request`">
+			</md-table-empty-state>
+
 			<md-table-row slot="md-table-row" slot-scope="{ item }">
 				<md-table-cell md-label="Who" md-sort-by="namename">
-					<a :href="'profile?id='+item.user_id">{{ item.user_name }}</a>
+					<a :href="'profile?id='+item.userId">{{ item.userFullName }}</a>
 				</md-table-cell>
-				<md-table-cell md-label="Document" md-sort-by="document">{{ item.document_name }}</md-table-cell>
+				<md-table-cell md-label="Document" md-sort-by="document">{{ item.documentName }}</md-table-cell>
 				<md-table-cell md-label="Message">{{ item.message }}</md-table-cell>
 				<md-table-cell md-label="Status">{{ item.status }}</md-table-cell>
 				<md-table-cell md-label="Actions">
@@ -460,9 +465,9 @@ export default {
 				method: 'post',
 				url: 'http://localhost:8082/document/request?token='+localStorage.token,
 				data: {
-					"user_id": localStorage.id,
-					"company_id": this.$route.query.id,
-					"document_id": this.requestId,
+					"userId": localStorage.id,
+					"companyId": this.$route.query.id,
+					"documentId": this.requestId,
 					"message": this.requestMessage
 				},
 				headers: {
@@ -502,7 +507,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/document/requestByCompany?company_id='+this.$route.query.id,
+				url: 'http://localhost:8082/document/requests?company_id='+this.$route.query.id,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}

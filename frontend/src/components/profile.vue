@@ -28,19 +28,24 @@
 			Change avatar
 		</md-button>
 
-		<md-table v-model="offers" md-sort="name" md-sort-order="asc" md-card md-fixed-header ref="offerTable">
+		<md-table v-model="offers" md-sort="name" md-sort-order="asc" md-card ref="offerTable">
 			<md-table-toolbar>
 				<div class="md-toolbar-section-start">
 					<h1 class="md-title">Job Offers</h1>
 				</div>
 			</md-table-toolbar>
 
+			<md-table-empty-state
+				md-label="No job offers found"
+				:md-description="`Maybe later someone send you a offer`">
+			</md-table-empty-state>
+
 			<md-table-row slot="md-table-row" slot-scope="{ item }">
 				<md-table-cell md-label="Company" md-sort-by="name">
-					<a :href="'company?id='+item.company_id">{{ item.company_name }}</a>
+					<a :href="'company?id='+item.companyId">{{ item.companyName }}</a>
 				</md-table-cell>
 				<md-table-cell md-label="Employer" md-sort-by="employer">
-					<a :href="'profile?id='+item.employer_id">{{ item.employer_name }}</a>
+					<a :href="'profile?id='+item.employerId">{{ item.employerFullName }}</a>
 				</md-table-cell>
 				<md-table-cell md-label="For the position" md-sort-by="role">{{ item.role }}</md-table-cell>
 				<md-table-cell md-label="Message from employer">{{ item.message }}</md-table-cell>
@@ -55,42 +60,25 @@
 				</md-table-cell>
 			</md-table-row>
 		</md-table>
-		<md-table v-model="requests" md-sort="name" md-sort-order="asc" md-card md-fixed-header ref="requestTable">
+		<md-table v-model="requests" md-sort="name" md-sort-order="asc" md-card ref="requestTable">
 			<md-table-toolbar>
 				<div class="md-toolbar-section-start">
-					<h1 class="md-title">Documents request</h1>
+					<h1 class="md-title">Document requests</h1>
 				</div>
 			</md-table-toolbar>
+
+			<md-table-empty-state
+				md-label="No document requests found"
+				:md-description="`You can request any document of any company`">
+			</md-table-empty-state>
 
 			<md-table-row slot="md-table-row" slot-scope="{ item }">
 				<md-table-cell md-label="Company" md-sort-by="company">
-					<a :href="'company?id='+item.company_id">{{ item.company_name }}</a>
+					<a :href="'company?id='+item.companyId">{{ item.companyName }}</a>
 				</md-table-cell>
-				<md-table-cell md-label="Document" md-sort-by="document">{{ item.document_name }}</md-table-cell>
+				<md-table-cell md-label="Document" md-sort-by="document">{{ item.documentName }}</md-table-cell>
 				<md-table-cell md-label="Message">{{ item.message }}</md-table-cell>
 				<md-table-cell md-label="Status">{{ item.status }}</md-table-cell>
-			</md-table-row>
-		</md-table>
-
-		<md-table v-model="notices" md-sort="ID" md-sort-order="asc" md-card md-fixed-header ref="noticeTable">
-			<md-table-toolbar>
-				<div class="md-toolbar-section-start">
-					<h1 class="md-title">Notices</h1>
-				</div>
-			</md-table-toolbar>
-			<md-table-row slot="md-table-row" slot-scope="{ item }">
-				<md-table-cell md-label="ID" md-sort-by="ID">
-					{{ item.id }}
-				</md-table-cell>
-				<md-table-cell md-label="Text" md-sort-by="text">{{ item.text }}</md-table-cell>
-				<md-table-cell md-label="Actions">
-					<md-button class="md-raised md-primary" :class="'buttons'+item.status + ' action'+item.isAction" @click="setJobOfferStatus(item.id, 'ACCEPTED')">
-						Accept
-					</md-button>
-					<md-button class="md-raised md-accent" :class="'buttons'+item.status + ' action'+item.isAction" @click="setJobOfferStatus(item.id, 'DECLINED')">
-						Decline
-					</md-button>
-				</md-table-cell>
 			</md-table-row>
 		</md-table>
 
@@ -112,7 +100,6 @@ export default {
 
 			offers: [],
 			requests: [],
-			notices: [],
 
 			showAvatarUpdateDialog: false,
 		}
@@ -241,7 +228,6 @@ export default {
 			this.$refs.changeAvatar.$el.style.display = "block";
 			this.$refs.offerTable.$el.style.display = "block";
 			this.$refs.requestTable.$el.style.display = "block";
-			this.$refs.noticeTable.$el.style.display = "block";
 		},
 
 		getJobOffer(){
@@ -278,7 +264,6 @@ export default {
 							"isAction": "YES"
 						});
 					});
-					this.notices = this.notices.concat(forNotices);
 				}
 			});
 		},
@@ -348,7 +333,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/document/requestByUser?user_id='+this.$route.query.id,
+				url: 'http://localhost:8082/document/requests?user_id='+this.$route.query.id,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -378,7 +363,6 @@ export default {
 							"isAction": "NO"
 						});
 					});
-					this.notices = this.notices.concat(forNotices);
 
 				}
 			});

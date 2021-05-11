@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2021-05-09T13:13:43+0300",
+    date = "2021-05-11T21:48:59+0300",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 1.8.0_282 (Amazon.com Inc.)"
 )
 @Component
@@ -20,9 +20,9 @@ public class JobOfferMapperImpl extends JobOfferMapper {
         JobOffer jobOffer = new JobOffer();
 
         jobOffer.setId( jobOfferDto.getId() );
-        jobOffer.setUser_id( jobOfferDto.getUser_id() );
-        jobOffer.setCompany_id( jobOfferDto.getCompany_id() );
-        jobOffer.setEmployer_id( jobOfferDto.getEmployer_id() );
+        jobOffer.setUserId( jobOfferDto.getUserId() );
+        jobOffer.setCompanyId( jobOfferDto.getCompanyId() );
+        jobOffer.setEmployerId( jobOfferDto.getEmployerId() );
         jobOffer.setRole( jobOfferDto.getRole() );
         jobOffer.setMessage( jobOfferDto.getMessage() );
         jobOffer.setStatus( jobOfferDto.getStatus() );
@@ -39,9 +39,9 @@ public class JobOfferMapperImpl extends JobOfferMapper {
         JobOfferDto jobOfferDto = new JobOfferDto();
 
         jobOfferDto.setId( jobOffer.getId() );
-        jobOfferDto.setUser_id( jobOffer.getUser_id() );
-        jobOfferDto.setCompany_id( jobOffer.getCompany_id() );
-        jobOfferDto.setEmployer_id( jobOffer.getEmployer_id() );
+        jobOfferDto.setUserId( jobOffer.getUserId() );
+        jobOfferDto.setCompanyId( jobOffer.getCompanyId() );
+        jobOfferDto.setEmployerId( jobOffer.getEmployerId() );
         jobOfferDto.setRole( jobOffer.getRole() );
         jobOfferDto.setMessage( jobOffer.getMessage() );
         jobOfferDto.setStatus( jobOffer.getStatus() );

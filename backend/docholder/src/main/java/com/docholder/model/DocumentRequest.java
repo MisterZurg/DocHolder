@@ -17,11 +17,14 @@ public class DocumentRequest {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    private UUID user_id;
+    @Column(name = "user_id")
+    private UUID userId;
 
-    private UUID company_id;
+    @Column(name = "company_id")
+    private UUID companyId;
 
-    private UUID document_id;
+    @Column(name = "document_id")
+    private UUID documentId;
 
     @Column(name = "message")
     private String message;

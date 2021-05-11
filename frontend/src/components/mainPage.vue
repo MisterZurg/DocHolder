@@ -23,6 +23,11 @@
 				<md-table-cell md-label="Description" md-sort-by="description">{{ item.description }}</md-table-cell>
 			</md-table-row>
 
+			<md-table-empty-state
+				md-label="No company found for this search query"
+				:md-description="`Try a different search term or create a new company.`">
+			</md-table-empty-state>
+
 		</md-table>
 		<div class="v-table__pagination">
 			<div class="page"
@@ -73,6 +78,8 @@ export default {
 	},
 	methods: {
 		updateTable(){
+			this.pageNumber = 1;
+			this.pageColumn = 1;
             this.companies_data = this.getCompanies();
             this.pageColumn = this.getPageColumn();
             this.searched = this.companies_data;
@@ -82,6 +89,7 @@ export default {
 			this.$router.push("company?id="+id);
 		},
 		getCompanies() {
+			// this.companies_data = [[]];
 			let data = [];
 			this.$http(
 				{
@@ -114,9 +122,9 @@ export default {
 				})
 				.catch(function (error) {
 					console.log("catch error : " + error);
-					alert("No company found");
-					return error;
+					return [];
 				});
+
 			return data;
 		},
 		getPageColumn() {
@@ -211,7 +219,11 @@ export default {
 }
 /*md-content md-table-content md-scrollbar*/
 .md-table .md-content{
-	border: 10px solid red !important;
+	/*border: 10px solid red !important;*/
 	/*max-height: none !important;*/
+}
+.md-empty-state{
+	/*display: none;*/
+	transition: none !important;
 }
 </style>

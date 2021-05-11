@@ -2,6 +2,7 @@ package com.docholder.controllers;
 
 import com.docholder.model.*;
 import com.docholder.repository.CompanyRepository;
+import com.docholder.repository.JobOfferRepository;
 import com.docholder.repository.UserRepository;
 import com.docholder.service.CompanyService;
 import com.docholder.service.UserService;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/company")
@@ -37,6 +39,7 @@ public class CompanyController {
     private final JobOfferMapper jobOfferMapper;
 
     private final CompanyRepository companyRepository;
+    private final JobOfferRepository jobOfferRepository;
     private final UserRepository userRepository;
 
     @PreAuthorize("hasPermission(#token, 'createCompany')")
@@ -105,6 +108,9 @@ public class CompanyController {
             @RequestParam(name = "filter") String name)
     {
         Page<Company> companies = companyService.findAllPublishedByPageAndName(limit, page, name);
+//////////////////        companies.getTotalElements()
+//        access control expose headers : contant range
+//        rename to name
 
         Page<CompanyDto> companiesDto = companyMapper.entityToDto(companies);
         return companiesDto != null &&  !companiesDto.isEmpty()
@@ -166,9 +172,6 @@ public class CompanyController {
     @PostMapping(value = "/invite")
     public ResponseEntity<?> invite(@RequestBody JobOffer jobOffer, @RequestParam String email, @RequestParam String token){
 
-        System.out.println(jobOffer);
-        System.out.println(email);
-
         return companyService.invite(jobOffer, email)
                 ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
@@ -176,12 +179,19 @@ public class CompanyController {
     @GetMapping(value = "/invite")
     public ResponseEntity<?> getInvitations(@RequestParam(name = "user_id") UUID userId){
         List<JobOffer> jobOffer = companyService.getInvitations(userId);
+
+        List<UUID> companyUUIDs = jobOffer.stream().map(JobOffer::getCompanyId).collect(Collectors.toList());
+        Map<UUID, String> companyMap = companyRepository.findAllById(companyUUIDs).stream().collect(Collectors.toMap(Company::getId, Company::getName));
+
+        List<UUID> employerUUIDs = jobOffer.stream().map(JobOffer::getEmployerId).collect(Collectors.toList());
+        Map<UUID, String> employerMap = userRepository.findAllById(employerUUIDs).stream().collect(Collectors.toMap(User::getId, user -> user.getName()+" "+user.getSurname()));
+
         List<JobOfferDto> jobOffersDto = jobOfferMapper.entityToDto(jobOffer);
-        jobOffersDto.stream().forEach(jobOfferDto -> {
-            jobOfferDto.setCompany_name( companyRepository.getOne(jobOfferDto.getCompany_id()).getName() );
-            jobOfferDto.setEmployer_name( userRepository.getOne(jobOfferDto.getEmployer_id()).getName() );
-            jobOfferDto.setEmployer_surname( userRepository.getOne(jobOfferDto.getEmployer_id()).getSurname() );
+        jobOffersDto.forEach(jobOfferDto -> {
+            jobOfferDto.setCompanyName( companyMap.get(jobOfferDto.getCompanyId()) );
+            jobOfferDto.setEmployerFullName( employerMap.get(jobOfferDto.getEmployerId()) );
         });
+
         return new ResponseEntity<>(jobOffersDto, HttpStatus.OK);
     }
     @PreAuthorize("hasPermission(new com.docholder.utilities.JobOfferSecurityTransfer(#token, #id), 'setJobOfferStatus')")

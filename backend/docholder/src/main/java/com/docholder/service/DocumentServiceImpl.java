@@ -123,9 +123,9 @@ public class DocumentServiceImpl implements DocumentService{
         try {
 //            check for unique
             DocumentRequest requestByAllInfo = documentRequestRepository.findByAllInfo(
-                    documentRequest.getUser_id(),
-                    documentRequest.getCompany_id(),
-                    documentRequest.getDocument_id()
+                    documentRequest.getUserId(),
+                    documentRequest.getCompanyId(),
+                    documentRequest.getDocumentId()
             );
 
             if (requestByAllInfo != null){

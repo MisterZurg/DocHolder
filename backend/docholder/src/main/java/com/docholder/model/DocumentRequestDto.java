@@ -11,13 +11,13 @@ import java.util.UUID;
 public class DocumentRequestDto {
 
     private UUID id;
-    private UUID user_id;
-    private UUID company_id;
-    private UUID document_id;
+    private UUID userId;
+    private UUID companyId;
+    private UUID documentId;
     private String message;
     private NoticeStatus status;
 
-    private String company_name;
-    private String user_name;
-    private String document_name;
+    private String companyName;
+    private String userFullName;
+    private String documentName;
 }

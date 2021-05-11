@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2021-05-09T20:04:57+0300",
+    date = "2021-05-11T22:24:56+0300",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 1.8.0_282 (Amazon.com Inc.)"
 )
 @Component
@@ -20,9 +20,9 @@ public class DocumentRequestMapperImpl extends DocumentRequestMapper {
         DocumentRequest documentRequest = new DocumentRequest();
 
         documentRequest.setId( documentRequestDto.getId() );
-        documentRequest.setUser_id( documentRequestDto.getUser_id() );
-        documentRequest.setCompany_id( documentRequestDto.getCompany_id() );
-        documentRequest.setDocument_id( documentRequestDto.getDocument_id() );
+        documentRequest.setUserId( documentRequestDto.getUserId() );
+        documentRequest.setCompanyId( documentRequestDto.getCompanyId() );
+        documentRequest.setDocumentId( documentRequestDto.getDocumentId() );
         documentRequest.setMessage( documentRequestDto.getMessage() );
         documentRequest.setStatus( documentRequestDto.getStatus() );
 
@@ -38,9 +38,9 @@ public class DocumentRequestMapperImpl extends DocumentRequestMapper {
         DocumentRequestDto documentRequestDto = new DocumentRequestDto();
 
         documentRequestDto.setId( documentRequest.getId() );
-        documentRequestDto.setUser_id( documentRequest.getUser_id() );
-        documentRequestDto.setCompany_id( documentRequest.getCompany_id() );
-        documentRequestDto.setDocument_id( documentRequest.getDocument_id() );
+        documentRequestDto.setUserId( documentRequest.getUserId() );
+        documentRequestDto.setCompanyId( documentRequest.getCompanyId() );
+        documentRequestDto.setDocumentId( documentRequest.getDocumentId() );
         documentRequestDto.setMessage( documentRequest.getMessage() );
         documentRequestDto.setStatus( documentRequest.getStatus() );
 

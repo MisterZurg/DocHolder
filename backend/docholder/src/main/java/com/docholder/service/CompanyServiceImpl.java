@@ -66,7 +66,7 @@ public class CompanyServiceImpl implements CompanyService{
     @Override
     public Page<Company> findAllPublishedByPageAndName(int limit, int page, String searchName){
         Pageable pageable = PageRequest.of(page, limit);
-        return companyRepository.findAllByStatusAndNameContains(CompanyStatus.PUBLISHED, searchName, pageable);
+        return companyRepository.findAllByStatusAndNameContainingIgnoreCase(CompanyStatus.PUBLISHED, searchName, pageable);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class CompanyServiceImpl implements CompanyService{
     public boolean invite(JobOffer jobOffer, String email){
 
         try {
-            jobOffer.setUser_id( userRepository.findUserByEmail(email).getId() );
+            jobOffer.setUserId( userRepository.findUserByEmail(email).getId() );
             jobOfferRepository.save(jobOffer);
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,8 +157,8 @@ public class CompanyServiceImpl implements CompanyService{
             jobOfferRepository.save(offer);
 
             if (status == NoticeStatus.ACCEPTED){
-                User user = userRepository.getOne(offer.getUser_id());
-                user.setCompany_id( offer.getCompany_id() );
+                User user = userRepository.getOne(offer.getUserId());
+                user.setCompany_id( offer.getCompanyId() );
                 user.setRole( offer.getRole() );
                 userRepository.save(user);
 

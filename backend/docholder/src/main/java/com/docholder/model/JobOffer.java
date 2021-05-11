@@ -20,17 +20,20 @@ public class JobOffer {
 //    @OneToOne
 //    @PrimaryKeyJoinColumn(name = "user_id")
 //    private User user;
-    private UUID user_id;
+    @Column(name = "user_id")
+    private UUID userId;
 
 //    @OneToOne
 //    @PrimaryKeyJoinColumn(name = "company_id")
 //    private Company company;
-    private UUID company_id;
+    @Column(name = "company_id")
+    private UUID companyId;
 
 //    @OneToOne
 //    @PrimaryKeyJoinColumn(name = "employer_id")
 //    private User employer;
-    private UUID employer_id;
+    @Column(name = "employer_id")
+    private UUID employerId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")

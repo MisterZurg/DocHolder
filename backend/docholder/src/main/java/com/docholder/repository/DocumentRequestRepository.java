@@ -10,16 +10,16 @@ import java.util.UUID;
 
 public interface DocumentRequestRepository extends JpaRepository<DocumentRequest, UUID> {
 
-    @Query("SELECT r FROM DocumentRequest r WHERE (r.company_id = :companyId)")
+    @Query("SELECT r FROM DocumentRequest r WHERE (r.companyId = :companyId)")
     public List<DocumentRequest> findAllByCompany_id(UUID companyId);
 
-    @Query("SELECT r FROM DocumentRequest r WHERE (r.user_id = :userId)")
+    @Query("SELECT r FROM DocumentRequest r WHERE (r.userId = :userId)")
     public List<DocumentRequest> findAllByUser_id(UUID userId);
 
-    @Query("SELECT r FROM DocumentRequest r WHERE (r.user_id = :userId and r.document_id = :documentId)")
+    @Query("SELECT r FROM DocumentRequest r WHERE (r.userId = :userId and r.documentId = :documentId)")
     public DocumentRequest getOneByUser_idAndDocument_id(UUID userId, UUID documentId);
 
-    @Query("SELECT r FROM DocumentRequest r WHERE (r.user_id = :userId AND r.company_id = :companyId AND r.document_id = :documentId)")
+    @Query("SELECT r FROM DocumentRequest r WHERE (r.userId = :userId AND r.companyId = :companyId AND r.documentId = :documentId)")
     public DocumentRequest findByAllInfo(UUID userId, UUID companyId, UUID documentId);
 
 }

@@ -158,8 +158,8 @@ export default {
 				method: 'post',
 				url: 'http://localhost:8082/company/invite?email='+this.offerEmail+'&token='+localStorage.token,
 				data: {
-					"company_id": localStorage.company_id,
-					"employer_id": localStorage.id,
+					"companyId": localStorage.company_id,
+					"employerId": localStorage.id,
 					"role": this.offerRole,
 					"message": this.offerMessage
 				},

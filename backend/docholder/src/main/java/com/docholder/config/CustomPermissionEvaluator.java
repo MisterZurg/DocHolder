@@ -116,7 +116,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             try {
 //                replace request_id with document_id
                 DocumentSecurityTransfer docTrans = (DocumentSecurityTransfer) obj;
-                docTrans.setId( documentRequestRepository.getOne( docTrans.getId() ).getDocument_id() );
+                docTrans.setId( documentRequestRepository.getOne( docTrans.getId() ).getDocumentId() );
                 return modifyDocumentPermission( docTrans );
             } catch (Exception e){
 //                e.printStackTrace();
@@ -208,7 +208,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         Map<String, Object> user = jwt.getData(token);
         UUID userId = UUID.fromString(user.get("id").toString());
 
-        if(!jobOfferRepository.getOne(id).getUser_id().equals( userId )) return false;
+        if(!jobOfferRepository.getOne(id).getUserId().equals( userId )) return false;
 
         return true;
     }

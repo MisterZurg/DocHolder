@@ -166,11 +166,11 @@ export default {
 							this.logo = "data:image/jpeg;base64," + data.logo;
 						}
 
-						if(data.status == "DRAFT") this.status = "В процессе заполнения данных";
-						else if(data.status == "READY_TO_VERIFY") this.status = "На модерации";
-						else if(data.status == "APPROVED") this.status = "Проверенный";
-						else if(data.status == "NOT_APPROVED") this.status = "Не соответствующий требованиям";
-						else if(data.status == "PUBLISHED") this.status = "Проверенный";
+						if(data.status == "DRAFT") this.status = "In the progress of filling the data";
+						else if(data.status == "READY_TO_VERIFY") this.status = "Moderation";
+						else if(data.status == "APPROVED") this.status = "Approved";
+						else if(data.status == "NOT_APPROVED") this.status = "Does not meet the requirements";
+						else if(data.status == "PUBLISHED") this.status = "Verified";
 						
 						// console.log(data);
 						if(data.errorId != null) this.adminMessage = data.errorId.message;
@@ -361,7 +361,7 @@ export default {
 }
 .status{
 	padding-left: 5px;
-	font-size: 0.4em;
+	font-size: 0.5em;
 	vertical-align: super;
 }
 #nowDescription{
