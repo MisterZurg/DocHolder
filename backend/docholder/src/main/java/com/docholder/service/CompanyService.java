@@ -21,8 +21,12 @@ public interface CompanyService {
     Company read(UUID id);
 
 
-    long countPublished();
+    long countPublished(String name);
     Page<Company> findAllPublishedByPage(int limit, int page);
+
+    Page<Company> findPublishedCompanyByGivenName(int limit, int page, String name);
+
+    //Page<Company> findCompanyByName(int limit, int page);
 
 //    User readByEmail(String email);
 

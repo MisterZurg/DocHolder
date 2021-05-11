@@ -53,8 +53,8 @@ public class CompanyServiceImpl implements CompanyService{
     }
 
     @Override
-    public long countPublished(){
-        return companyRepository.countAllByStatus(CompanyStatus.PUBLISHED);
+    public long countPublished(String name){
+        return companyRepository.countAllByStatus(name, CompanyStatus.PUBLISHED);
     }
 
     @Override
@@ -62,6 +62,13 @@ public class CompanyServiceImpl implements CompanyService{
         Pageable pageable = PageRequest.of(page, limit);
         return companyRepository.findAllByStatus(CompanyStatus.PUBLISHED, pageable);
     }
+
+    @Override
+    public Page<Company> findPublishedCompanyByGivenName(int limit, int page, String name){
+        Pageable pageable = PageRequest.of(page, limit);
+        return companyRepository.findCompanyByGivenSearch(name,pageable);
+    }
+
 
     @Override
     public boolean update(Company company) {

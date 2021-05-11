@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/DocHolder.iml" filepath="$PROJECT_DIR$/.idea/DocHolder.iml" />
       <module fileurl="file://$PROJECT_DIR$/backend/docholder/docholder.iml" filepath="$PROJECT_DIR$/backend/docholder/docholder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/backend/docholder/bin/docholder (1).iml" filepath="$PROJECT_DIR$/backend/docholder/bin/docholder (1).iml" />
     </modules>
   </component>
 </project>

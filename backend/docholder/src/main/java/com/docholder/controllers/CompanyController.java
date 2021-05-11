@@ -1,6 +1,7 @@
 package com.docholder.controllers;
 
 import com.docholder.model.*;
+import com.docholder.repository.CompanyRepository;
 import com.docholder.service.CompanyService;
 import com.docholder.service.UserService;
 import com.docholder.utilities.Jwt;
@@ -27,6 +28,8 @@ import java.util.*;
 public class CompanyController {
 
     private final CompanyService companyService;
+    private final CompanyRepository companyRepository;
+
     private final CompanyMapper companyMapper;
     private final Jwt jwt;
     private final UserService userService;
@@ -87,8 +90,8 @@ public class CompanyController {
     }
 
     @GetMapping(value ="/countPublished")
-    public ResponseEntity<?> countPublished() {
-        return new ResponseEntity(companyService.countPublished(), HttpStatus.OK);
+    public ResponseEntity<?> countPublished(String name) {
+        return new ResponseEntity(companyService.countPublished(name), HttpStatus.OK);
     }
 
     @GetMapping(value = "published")
@@ -104,6 +107,26 @@ public class CompanyController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping("published/filter")
+    public ResponseEntity<List<Company>> filterByName(
+            @RequestParam(name = "limit") int limit,
+            @RequestParam(name = "page") int page,
+            @RequestParam String searchName) {
+        // searchName = "";
+        // System.out.println(searchName);
+        Page<Company> companies = companyService.findPublishedCompanyByGivenName(limit,page, searchName);
+        Page<CompanyDto> companiesDto = companyMapper.entityToDto(companies);
+
+        return companiesDto != null && !companiesDto.isEmpty()
+                ? new ResponseEntity(companiesDto, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+//    @GetMapping(value ="/countPublished")
+//    public ResponseEntity<?> countPublished(
+//        @RequestParam String searchName
+//        ) {
+//        return new ResponseEntity(companyService.countPublished(), HttpStatus.OK);
+   // }
     @PreAuthorize("hasPermission(#token, 'updateCompany')")
     @PostMapping(value = "/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateLogo(
