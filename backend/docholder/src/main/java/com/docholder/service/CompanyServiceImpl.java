@@ -32,16 +32,16 @@ public class CompanyServiceImpl implements CompanyService{
         companyRepository.save(company);
     }
 
-    @Override
-    public long count(){
-        return companyRepository.count();
-    }
-
-    @Override
-    public Page<Company> findAllByPage(int limit, int page){
-        Pageable pageable = PageRequest.of(page, limit);
-        return companyRepository.findAll(pageable);
-    }
+//    @Override
+//    public long count(){
+//        return companyRepository.count();
+//    }
+//
+//    @Override
+//    public Page<Company> findAllByPage(int limit, int page){
+//        Pageable pageable = PageRequest.of(page, limit);
+//        return companyRepository.findAll(pageable);
+//    }
 
     @Override
     public List<Company> readAll() {
@@ -59,14 +59,23 @@ public class CompanyServiceImpl implements CompanyService{
     }
 
     @Override
-    public long countPublishedByName(String name){
-        return companyRepository.countAllByStatusAndNameContains(CompanyStatus.PUBLISHED, name);
+    public long countPublishedByNameAndStatus(String name, CompanyStatus status){
+        return companyRepository.countAllByStatusAndNameContains(status, name);
+    }
+    @Override
+    public Page<Company> findAllPublishedByPageAndNameAndStatus(int limit, int page, String searchName, CompanyStatus status){
+        Pageable pageable = PageRequest.of(page, limit);
+        return companyRepository.findAllByStatusAndNameContainingIgnoreCase(status, searchName, pageable);
     }
 
     @Override
+    public long countPublishedByName(String name){
+        return companyRepository.countAllByNameContains(name);
+    }
+    @Override
     public Page<Company> findAllPublishedByPageAndName(int limit, int page, String searchName){
         Pageable pageable = PageRequest.of(page, limit);
-        return companyRepository.findAllByStatusAndNameContainingIgnoreCase(CompanyStatus.PUBLISHED, searchName, pageable);
+        return companyRepository.findAllByNameContainingIgnoreCase(searchName, pageable);
     }
 
     @Override

@@ -69,23 +69,23 @@ public class CompanyController {
 //        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping(value ="/count")
-    public ResponseEntity<?> count() {
-        return new ResponseEntity(companyService.count(), HttpStatus.OK);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Company>> readAllByPage(
-            @RequestParam(name = "limit") int limit,
-            @RequestParam(name = "page") int page)
-    {
-        Page<Company> companies = companyService.findAllByPage(limit, page);
-
-        Page<CompanyDto> companiesDto = companyMapper.entityToDto(companies);
-        return companiesDto != null &&  !companiesDto.isEmpty()
-                ? new ResponseEntity(companiesDto, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+//    @GetMapping(value ="/count")
+//    public ResponseEntity<?> count() {
+//        return new ResponseEntity(companyService.count(), HttpStatus.OK);
+//    }
+//
+//    @GetMapping
+//    public ResponseEntity<List<Company>> readAllByPage(
+//            @RequestParam(name = "limit") int limit,
+//            @RequestParam(name = "page") int page)
+//    {
+//        Page<Company> companies = companyService.findAllByPage(limit, page);
+//
+//        Page<CompanyDto> companiesDto = companyMapper.entityToDto(companies);
+//        return companiesDto != null &&  !companiesDto.isEmpty()
+//                ? new ResponseEntity(companiesDto, HttpStatus.OK)
+//                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//    }
 
     @GetMapping(value ="/read")
     public ResponseEntity<List<Company>> read(@RequestParam(name = "id") UUID id) {
@@ -96,21 +96,34 @@ public class CompanyController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping(value ="/countPublished")
-    public ResponseEntity<?> countPublished(@RequestParam(name = "filter") String name) {
-        return new ResponseEntity(companyService.countPublishedByName(name), HttpStatus.OK);
+    @GetMapping(value ="/count")
+    public ResponseEntity<?> countPublished(
+            @RequestParam(name = "filter") String name,
+            @RequestParam(name = "status") @Nullable CompanyStatus status)
+    {
+        long companiesCount = 0;
+
+        if(status != null)
+            companiesCount = companyService.countPublishedByNameAndStatus(name, status);
+        else
+            companiesCount = companyService.countPublishedByName(name);
+
+        return new ResponseEntity(companiesCount, HttpStatus.OK);
     }
 
-    @GetMapping(value = "published")
+    @GetMapping
     public ResponseEntity<List<Company>> readAllPublishedByPage(
             @RequestParam(name = "limit") int limit,
             @RequestParam(name = "page") int page,
-            @RequestParam(name = "filter") String name)
+            @RequestParam(name = "filter") String name,
+            @RequestParam(name = "status") @Nullable CompanyStatus status)
     {
-        Page<Company> companies = companyService.findAllPublishedByPageAndName(limit, page, name);
-//////////////////        companies.getTotalElements()
-//        access control expose headers : contant range
-//        rename to name
+        Page<Company> companies = null;
+
+        if(status != null)
+            companies = companyService.findAllPublishedByPageAndNameAndStatus(limit, page, name, status);
+        else
+            companies = companyService.findAllPublishedByPageAndName(limit, page, name);
 
         Page<CompanyDto> companiesDto = companyMapper.entityToDto(companies);
         return companiesDto != null &&  !companiesDto.isEmpty()

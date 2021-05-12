@@ -95,7 +95,7 @@ export default {
 				{
 					method: 'get',
 					// url: 'http://localhost:8082/company/published?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1),
-					url: 'http://localhost:8082/company/published?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1) + '&filter=' + this.search,
+					url: 'http://localhost:8082/company?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1) + '&filter=' + this.search+'&status=PUBLISHED',
 					headers: {
 						"Content-type": "application/json; charset=UTF-8"
 					}
@@ -131,7 +131,7 @@ export default {
 			var query = this.$http(
 				{
 					method: 'get',
-					url: 'http://localhost:8082/company/countPublished?filter=' + this.search,
+					url: 'http://localhost:8082/company/count?filter=' + this.search+'&status=PUBLISHED',
 					headers: {
 						"Content-type": "application/json; charset=UTF-8"
 					}

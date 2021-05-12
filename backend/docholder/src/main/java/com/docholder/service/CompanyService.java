@@ -5,6 +5,7 @@ import com.docholder.model.CompanyStatus;
 import com.docholder.model.JobOffer;
 import com.docholder.model.NoticeStatus;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,13 +16,16 @@ public interface CompanyService {
 
     void create(Company company);
 
-    long count();
-    Page<Company> findAllByPage(int limit, int page);
+//    long count();
+//    Page<Company> findAllByPage(int limit, int page);
 
     List<Company> readAll();
 
     Company read(UUID id);
 
+
+    long countPublishedByNameAndStatus(String name, CompanyStatus status);
+    Page<Company> findAllPublishedByPageAndNameAndStatus(int limit, int page, String searchName, CompanyStatus status);
 
     long countPublishedByName(String name);
     Page<Company> findAllPublishedByPageAndName(int limit, int page, String searchName);

@@ -21,4 +21,7 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
 
     Page<Company> findAllByStatusAndNameContainingIgnoreCase(CompanyStatus status, String name, Pageable pageable);
     long countAllByStatusAndNameContains(CompanyStatus status, String name);
+
+    Page<Company> findAllByNameContainingIgnoreCase(String searchName, Pageable pageable);
+    long countAllByNameContains(String name);
 }

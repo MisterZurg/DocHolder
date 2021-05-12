@@ -38,7 +38,7 @@
 			<md-textarea :value="description" ref="changeDescriptionInput"></md-textarea>
 		</md-field>
 
-		<div class="not-verified">{{adminMessage}}</div>
+		<div class="not-verified admin-message">{{adminMessage}}</div>
 
 		<md-button class="md-raised button-edit" v-on:click="editInfo();" ref="changeInfo">Edit</md-button>
 		<md-button class="md-raised button-edit md-primary" v-on:click="saveInfo();" ref="saveInfo" disabled>Send for verification</md-button>
@@ -173,7 +173,7 @@ export default {
 						else if(data.status == "PUBLISHED") this.status = "Verified";
 						
 						// console.log(data);
-						if(data.errorId != null) this.adminMessage = data.errorId.message;
+						if(data.errorId != null) this.adminMessage = "Message from admin: "+data.errorId.message;
 						else this.adminMessage = "";
 					}
 				});
@@ -341,6 +341,9 @@ export default {
 }
 .in-progress{
 	color: #FFF176;
+}
+.admin-message{
+	margin-bottom: 15px;
 }
 
 #changeCompanyName,
