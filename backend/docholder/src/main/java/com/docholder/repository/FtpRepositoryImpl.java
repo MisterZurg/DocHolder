@@ -5,18 +5,19 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.UUID;
 
 @Repository
+@CrossOrigin
 public class FtpRepositoryImpl implements FtpRepository{
 
-    //    SHOULD I TRANSFER THIS PROPERTIES TO INTERFACE???????????????
     private final String username = "someuser";
     private final String password = "Qwerty123!";
-    private final String url = "localhost";
+    private final String url = "docker-ftp";
     private final int port = 21;
 
     private FTPClient con = null;

@@ -3,7 +3,6 @@ package com.docholder.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.annotations.Type;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.UUID;

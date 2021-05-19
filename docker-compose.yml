@@ -8,6 +8,7 @@ services:
     ports:
       - 80:80
       - 8081:8081
+      - 8082:8082
     restart: always
 
   docker-ftp:
@@ -18,7 +19,6 @@ services:
       - "21:21"
       - "21000-21010:21000-21010"
     environment:
-      ADDRESS: localhost
       USERS: "someuser|Qwerty123!"
     restart: always
 
@@ -32,6 +32,14 @@ services:
     volumes:
       - ./frontend/public:/frontend/public
       - ./frontend/src:/frontend/src
+
+  docker-backend:
+    build:
+      context: ./backend/docholder/
+      dockerfile: Dockerfile
+    depends_on: 
+      - docker-nginx
+      - docker-postgres
 
   docker-postgres:
     image: postgres:13.2-alpine

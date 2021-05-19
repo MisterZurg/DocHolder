@@ -130,10 +130,10 @@ export default {
 			console.log(this.avatarBinary);
 
 			let formData = new FormData();
-			formData.append('id', localStorage.id);
+			// formData.append('id', localStorage.id);
 			formData.append('token', localStorage.token);
 			formData.append('file', this.avatarBinary);
-			var query = this.$http.post('http://localhost:8082/user/avatar',
+			var query = this.$http.put('http://localhost:8082/user/'+localStorage.id+'/avatar',
 			formData,
 				{
 					headers: {
@@ -144,11 +144,9 @@ export default {
 			.catch(function (error) {return error.response;});
 			query.then((response) => {
 				let status = response.status;
-				if (status == 409) {
-					// console.log("catch error 404");
-					return;
-				}
-				if (status == 200) {
+				if (status == 413) {
+					alert("Avatar size is too large. Max size is 5MB.");
+				}else if (status == 200) {
 					console.log("Avatar was successfully uploaded");
 					// this.getUser();
 					this.$router.go();
@@ -234,7 +232,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/company/invite?user_id='+this.$route.query.id,
+				url: 'http://localhost:8082/user/'+this.$route.query.id+'/invite',
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -277,8 +275,8 @@ export default {
 
 			var query = this.$http(
 			{
-				method: 'post',
-				url: 'http://localhost:8082/company/invite/status?id='+id+'&status='+status+'&token='+localStorage.token,
+				method: 'put',
+				url: 'http://localhost:8082/user/invite/'+id+'/status?status='+status+'&token='+localStorage.token,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}

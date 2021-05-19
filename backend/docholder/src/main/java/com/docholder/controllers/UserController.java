@@ -1,9 +1,9 @@
 package com.docholder.controllers;
 
-import com.docholder.model.User;
-import com.docholder.model.UserDto;
-import com.docholder.model.UserMapper;
-import com.docholder.model.UserRole;
+import com.docholder.model.*;
+import com.docholder.repository.CompanyRepository;
+import com.docholder.repository.UserRepository;
+import com.docholder.service.CompanyService;
 import com.docholder.service.UserService;
 import com.docholder.utilities.Encrypt;
 import com.docholder.utilities.Jwt;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value ="/user")
@@ -24,6 +25,10 @@ import java.util.*;
 public class UserController {
     private final UserMapper userMapper;
     private final UserService userService;
+    private final CompanyService companyService;
+    private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
+    private final JobOfferMapper jobOfferMapper;
     private final Jwt jwt;
     private final Encrypt encrypt;
 
@@ -41,17 +46,6 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<User>> read() {
-//        final List<User> users = userService.readAll();
-//
-////        How To convert List<User> to List<UserDto>????
-//
-//        return users != null &&  !users.isEmpty()
-//                ? new ResponseEntity<>(users, HttpStatus.OK)
-//                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//    }
-
     @GetMapping(value ="/{id}")
     public ResponseEntity<User> read(@PathVariable(name = "id") UUID id) {
         final User user = userService.read(id);
@@ -62,8 +56,8 @@ public class UserController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping(value ="/byCompany")
-    public ResponseEntity<User> readByCompany(@RequestParam(name = "id") UUID id) {
+    @GetMapping(value ="/company")
+    public ResponseEntity<User> readByCompany(@RequestParam(name = "company_id") UUID id) {
         final List<User> users = userService.readByCompany(id);
 
         List<UserDto> usersDto = userMapper.entityToDto(users);
@@ -78,49 +72,65 @@ public class UserController {
 
         user.setPassword(encrypt.sha256(user.getPassword()));
 
-        // search for user in DB by email and password
         User person = userService.authorization(user.getEmail(), user.getPassword());
 
-        // if user doesn't exist return code 404
         if(person == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        // generate JWT token
         String token = jwt.generateTokenByUser( userMapper.entityToDto(person) );
 
-        // return response
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
-//    @PutMapping(value = "/{id}")
-//    public ResponseEntity<?> update(@RequestBody UserDto userDto) {
-//        User user = userMapper.dtoToEntity(userDto);
-//        final boolean updated = userService.update(user, user.getId());
-//
-//        return updated
-//                ? new ResponseEntity<>(HttpStatus.OK)
-//                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
-//    }
-
-//    @DeleteMapping(value = "/{id}")
-//    public ResponseEntity<?> delete(@PathVariable(name = "id") UUID id) {
-//        final boolean deleted = userService.delete(id);
-//
-//        return deleted
-//                ? new ResponseEntity<>(HttpStatus.OK)
-//                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
-//    }
-
-//    @PreAuthorize("hasPermission(#token, 'updateCompany')")
-    @PostMapping(value = "/avatar", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(value = "/{id}/avatar", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateAvatar(
-            @RequestParam("id") UUID id,
+            @PathVariable("id") UUID id,
             @RequestParam String token,
             @RequestPart("file") MultipartFile avatar)
     {
-//        userService.updateAvatar(id, avatar);
+        if(avatar.getSize() > 5242880) return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
+
         return userService.updateAvatar(id, avatar)
                 ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+    }
+
+    @PreAuthorize("hasPermission(#token, 'updateCompany')")
+    @PostMapping(value = "/invite")
+    public ResponseEntity<?> invite(@RequestBody JobOffer jobOffer, @RequestParam String email, @RequestParam String token){
+
+        return companyService.invite(jobOffer, email)
+                ? new ResponseEntity<>(HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+    }
+
+    @GetMapping(value = "/{id}/invite")
+    public ResponseEntity<?> getInvitations(@PathVariable(name = "id") UUID id){
+        List<JobOffer> jobOffer = companyService.getInvitations(id);
+
+        List<UUID> companyUUIDs = jobOffer.stream().map(JobOffer::getCompanyId).collect(Collectors.toList());
+        Map<UUID, String> companyMap = companyRepository.findAllById(companyUUIDs).stream().collect(Collectors.toMap(Company::getId, Company::getName));
+
+        List<UUID> employerUUIDs = jobOffer.stream().map(JobOffer::getEmployerId).collect(Collectors.toList());
+        Map<UUID, String> employerMap = userRepository.findAllById(employerUUIDs).stream().collect(Collectors.toMap(User::getId, user -> user.getName()+" "+user.getSurname()));
+
+        List<JobOfferDto> jobOffersDto = jobOfferMapper.entityToDto(jobOffer);
+        jobOffersDto.forEach(jobOfferDto -> {
+            jobOfferDto.setCompanyName( companyMap.get(jobOfferDto.getCompanyId()) );
+            jobOfferDto.setEmployerFullName( employerMap.get(jobOfferDto.getEmployerId()) );
+        });
+
+        return new ResponseEntity<>(jobOffersDto, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasPermission(new com.docholder.utilities.JobOfferSecurityTransfer(#token, #id), 'setJobOfferStatus')")
+    @PutMapping(value = "/invite/{id}/status")
+    public ResponseEntity<?> setInviteStatus(
+            @PathVariable UUID id,
+            @RequestParam NoticeStatus status,
+            @RequestParam String token)
+    {
+        String newToken = companyService.setInviteStatus(id, status);
+        return new ResponseEntity<>(newToken, HttpStatus.OK);
     }
 
 }

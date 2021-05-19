@@ -29,6 +29,7 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/document")
 @RequiredArgsConstructor
@@ -40,13 +41,12 @@ public class DocumentController {
     private final UserRepository userRepository;
     private final DocumentRepository documentRepository;
 
-    //    public ResponseEntity<?> putDocument(@RequestParam UUID id, @RequestPart("file") MultipartFile file){
     @PreAuthorize("hasPermission(new com.docholder.utilities.DocumentSecurityTransfer(#documentDto, #token, null), 'putDocument')")
     @PostMapping(value = "/upload", consumes = {
             MediaType.TEXT_PLAIN_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> putDocument(
+    public ResponseEntity<?> upload(
             @RequestPart String token,
             @ApiParam(hidden = false) @RequestPart("documentDto") DocumentDto documentDto,
             @RequestPart("file") MultipartFile file
@@ -59,8 +59,8 @@ public class DocumentController {
     }
 
     @PreAuthorize("hasPermission(new com.docholder.utilities.DocumentSecurityTransfer(null, #token, #id), 'readDocument')")
-    @GetMapping(value = "/download")
-    public ResponseEntity<?> getDocument(@RequestParam UUID id, @RequestParam String token){
+    @GetMapping(value = "/{id}/download")
+    public ResponseEntity<?> download(@PathVariable UUID id, @RequestParam String token){
         byte[] bytes = documentService.getDocument(id);
 
         return bytes.length != 0
@@ -69,8 +69,8 @@ public class DocumentController {
     }
 
     @PreAuthorize("hasPermission(new com.docholder.utilities.DocumentSecurityTransfer(null, #token, #id), 'deleteDocument')")
-    @DeleteMapping(value = "/delete")
-    public ResponseEntity<?> deleteDocument(@RequestParam UUID id, @RequestParam String token){
+    @DeleteMapping(value = "/{id}/delete")
+    public ResponseEntity<?> delete(@PathVariable UUID id, @RequestParam String token){
         boolean is_deleted = documentService.deleteDocument(id);
 
         return is_deleted
@@ -78,9 +78,9 @@ public class DocumentController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping(value = "/byCompany")
-    public ResponseEntity<?> getDocumentsByCompany(@RequestParam(name = "id") UUID company_id){
-        List<Document> documents = documentService.getDocumentsByCompany(company_id);
+    @GetMapping(value = "/company")
+    public ResponseEntity<?> getDocumentsByCompany(@RequestParam(name = "company_id") UUID companyId){
+        List<Document> documents = documentService.getDocumentsByCompany(companyId);
         List<DocumentDto> documentsDto = documentMapper.entityToDto(documents);
         return documents != null && !documents.isEmpty()
                 ? new ResponseEntity<>(documents, HttpStatus.OK)
@@ -95,17 +95,7 @@ public class DocumentController {
                 ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
-//    @GetMapping(value = "/requestByCompany")
-//    public ResponseEntity<?> getRequestsByCompany(@RequestParam(name = "company_id") UUID companyId){
 
-//        List<DocumentRequestDto> documentRequestsDto = documentRequestMapper.entityToDto(documentRequests);
-//        documentRequestsDto.stream().forEach(documentRequestDto -> {
-//            documentRequestDto.setCompany_name( companyRepository.getOne(documentRequestDto.getCompany_id()).getName() );
-//            documentRequestDto.setUser_name( userRepository.getOne(documentRequestDto.getUser_id()).getName() );
-//            documentRequestDto.setDocument_name( documentRepository.getOne(documentRequestDto.getDocument_id()).getName() );
-//        });
-//        return new ResponseEntity<>(documentRequestsDto, HttpStatus.OK);
-//    }
     @GetMapping(value = "/requests")
     public ResponseEntity<?> getRequests(
             @RequestParam(name = "user_id") @Nullable UUID userId,
@@ -140,7 +130,7 @@ public class DocumentController {
     }
 
     @PreAuthorize("hasPermission(new com.docholder.utilities.DocumentSecurityTransfer(null, #token, #id), 'setStatusDocumentRequest')")
-    @PostMapping(value = "/request/status")
+    @PutMapping(value = "/request/status")
     public ResponseEntity<?> setRequestStatus(
             @RequestParam UUID id,
             @RequestParam NoticeStatus status,

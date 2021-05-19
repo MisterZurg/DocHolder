@@ -125,22 +125,16 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             }
         }
 
-//        User user = (User) targetDomainObject;
-//        if (user.getRole() != UserRole.ADMINISTRATOR) return false;
-
         return false;
     }
 
-    //    if user role equals document modify role or DIRECTOR or ADMINISTRATOR then return true
     private boolean updateCompanyPermission(String token){
         if( !jwt.isValid(token) ) return false;
         Map<String, Object> user = jwt.getData(token);
 
-        return user.get("role").equals("DIRECTOR")
-                || user.get("role").equals("ADMINISTRATOR");
+        return user.get("role").equals("DIRECTOR");
     }
 
-    //    if user role equals document modify role or DIRECTOR or ADMINISTRATOR then return true
     private boolean createCompanyPermission(String token){
         return jwt.isValid(token);
     }
@@ -152,7 +146,6 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         return user.get("role").equals("ADMINISTRATOR");
     }
 
-//    if user role equals document modify role or DIRECTOR or ADMINISTRATOR then return true
     private boolean modifyDocumentPermission(DocumentSecurityTransfer documentSecurityTransfer){
         Document document;
 
@@ -170,11 +163,9 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         if( !user.get("company_id").equals(document.getCompany_id()) ) return false;
 
         return user.get("role").equals(document.getRole_modify().toString())
-                || user.get("role").equals("DIRECTOR")
-                || user.get("role").equals("ADMINISTRATOR");
+                || user.get("role").equals("DIRECTOR");
     }
 
-    //    if user role equals document read role or DIRECTOR or ADMINISTRATOR then return true
     private boolean readDocumentPermission(DocumentSecurityTransfer documentSecurityTransfer){
         UUID id = documentSecurityTransfer.getId();
         String token = documentSecurityTransfer.getToken();
@@ -185,8 +176,6 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         if( !jwt.isValid(token) ) return false;
         Map<String, Object> user = jwt.getData(token);
 
-        if(user.get("role").equals("ADMINISTRATOR")) return true;
-
         DocumentRequest request = documentService.getRequestByUserAndDocument(UUID.fromString(user.get("id").toString()), id);
         if(request != null) {
             if (request.getStatus() == NoticeStatus.ACCEPTED)
@@ -196,8 +185,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         if( !document.getCompany_id().equals(user.get("company_id")) ) return false;
 
         return user.get("role").equals(document.getRole_read().toString())
-                || user.get("role").equals("DIRECTOR")
-                || user.get("role").equals("ADMINISTRATOR");
+                || user.get("role").equals("DIRECTOR");
     }
 
     private boolean modifyJobOfferStatusPermission( JobOfferSecurityTransfer jobOfferSecurityTransfer ){

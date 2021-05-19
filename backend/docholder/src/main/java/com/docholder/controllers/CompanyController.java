@@ -10,14 +10,16 @@ import com.docholder.utilities.Jwt;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +31,11 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/company")
 @RequiredArgsConstructor
+//@Log4j2
+//@CrossOrigin(exposedHeaders = "*")
 public class CompanyController {
+
+//    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CompanyService companyService;
     private final CompanyMapper companyMapper;
@@ -46,8 +52,6 @@ public class CompanyController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody CompanyDto companyDto, @RequestParam String token) {
         Company company = companyMapper.dtoToEntity(companyDto);
-//            System.out.println(company);
-//            System.out.println(token);
 
         // Will move to CustomPermissionEvaluator
         Map<String, Object> userdata = jwt.getData(token);
@@ -66,29 +70,10 @@ public class CompanyController {
         String newtoken = jwt.generateTokenByUser( userMapper.entityToDto(user) );
 
         return new ResponseEntity<>(newtoken, HttpStatus.CREATED);
-//        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-//    @GetMapping(value ="/count")
-//    public ResponseEntity<?> count() {
-//        return new ResponseEntity(companyService.count(), HttpStatus.OK);
-//    }
-//
-//    @GetMapping
-//    public ResponseEntity<List<Company>> readAllByPage(
-//            @RequestParam(name = "limit") int limit,
-//            @RequestParam(name = "page") int page)
-//    {
-//        Page<Company> companies = companyService.findAllByPage(limit, page);
-//
-//        Page<CompanyDto> companiesDto = companyMapper.entityToDto(companies);
-//        return companiesDto != null &&  !companiesDto.isEmpty()
-//                ? new ResponseEntity(companiesDto, HttpStatus.OK)
-//                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//    }
-
-    @GetMapping(value ="/read")
-    public ResponseEntity<List<Company>> read(@RequestParam(name = "id") UUID id) {
+    @GetMapping(value ="/{id}")
+    public ResponseEntity<List<Company>> read(@PathVariable UUID id) {
         final Company company = companyService.read(id);
 
         return company != null
@@ -96,26 +81,11 @@ public class CompanyController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping(value ="/count")
-    public ResponseEntity<?> countPublished(
-            @RequestParam(name = "filter") String name,
-            @RequestParam(name = "status") @Nullable CompanyStatus status)
-    {
-        long companiesCount = 0;
-
-        if(status != null)
-            companiesCount = companyService.countPublishedByNameAndStatus(name, status);
-        else
-            companiesCount = companyService.countPublishedByName(name);
-
-        return new ResponseEntity(companiesCount, HttpStatus.OK);
-    }
-
     @GetMapping
-    public ResponseEntity<List<Company>> readAllPublishedByPage(
+    public ResponseEntity<List<Company>> readAllByPage(
             @RequestParam(name = "limit") int limit,
             @RequestParam(name = "page") int page,
-            @RequestParam(name = "filter") String name,
+            @RequestParam(name = "name") String name,
             @RequestParam(name = "status") @Nullable CompanyStatus status)
     {
         Page<Company> companies = null;
@@ -126,19 +96,25 @@ public class CompanyController {
             companies = companyService.findAllPublishedByPageAndName(limit, page, name);
 
         Page<CompanyDto> companiesDto = companyMapper.entityToDto(companies);
+
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "*");
+        header.setRange(Collections.singletonList(HttpRange.createByteRange(page, companies.getTotalPages())));
+
         return companiesDto != null &&  !companiesDto.isEmpty()
-                ? new ResponseEntity(companiesDto, HttpStatus.OK)
+                ? new ResponseEntity(companiesDto, header, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PreAuthorize("hasPermission(#token, 'updateCompany')")
-    @PostMapping(value = "/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateLogo(
-            @RequestParam("id") UUID id,
+            @PathVariable UUID id,
             @RequestParam String token,
             @RequestPart("file") MultipartFile logo)
     {
-//        companyService.updateLogo(id,logo);
+        if(logo.getSize() > 5242880) return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
+
         return companyService.updateLogo(id, logo)
                 ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
@@ -158,9 +134,9 @@ public class CompanyController {
     }
 
     @PreAuthorize("hasPermission(#token, 'updateCompanyStatus')")
-    @PutMapping(value = "updateStatus")
+    @PutMapping(value = "{id}/status")
     public ResponseEntity<?> updateStatus(
-            @RequestParam UUID id,
+            @PathVariable UUID id,
             @RequestParam CompanyStatus status,
             @RequestParam String message,
             @RequestParam String token)
@@ -172,49 +148,4 @@ public class CompanyController {
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
-//    @DeleteMapping(value = "/{id}")
-//    public ResponseEntity<?> delete(@PathVariable(name = "id") UUID id) {
-//        final boolean deleted = companyService.delete(id);
-//
-//        return deleted
-//                ? new ResponseEntity<>(HttpStatus.OK)
-//                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
-//    }
-
-    @PreAuthorize("hasPermission(#token, 'updateCompany')")
-    @PostMapping(value = "/invite")
-    public ResponseEntity<?> invite(@RequestBody JobOffer jobOffer, @RequestParam String email, @RequestParam String token){
-
-        return companyService.invite(jobOffer, email)
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
-    }
-    @GetMapping(value = "/invite")
-    public ResponseEntity<?> getInvitations(@RequestParam(name = "user_id") UUID userId){
-        List<JobOffer> jobOffer = companyService.getInvitations(userId);
-
-        List<UUID> companyUUIDs = jobOffer.stream().map(JobOffer::getCompanyId).collect(Collectors.toList());
-        Map<UUID, String> companyMap = companyRepository.findAllById(companyUUIDs).stream().collect(Collectors.toMap(Company::getId, Company::getName));
-
-        List<UUID> employerUUIDs = jobOffer.stream().map(JobOffer::getEmployerId).collect(Collectors.toList());
-        Map<UUID, String> employerMap = userRepository.findAllById(employerUUIDs).stream().collect(Collectors.toMap(User::getId, user -> user.getName()+" "+user.getSurname()));
-
-        List<JobOfferDto> jobOffersDto = jobOfferMapper.entityToDto(jobOffer);
-        jobOffersDto.forEach(jobOfferDto -> {
-            jobOfferDto.setCompanyName( companyMap.get(jobOfferDto.getCompanyId()) );
-            jobOfferDto.setEmployerFullName( employerMap.get(jobOfferDto.getEmployerId()) );
-        });
-
-        return new ResponseEntity<>(jobOffersDto, HttpStatus.OK);
-    }
-    @PreAuthorize("hasPermission(new com.docholder.utilities.JobOfferSecurityTransfer(#token, #id), 'setJobOfferStatus')")
-    @PostMapping(value = "/invite/status")
-    public ResponseEntity<?> setInviteStatus(
-            @RequestParam UUID id,
-            @RequestParam NoticeStatus status,
-            @RequestParam String token)
-    {
-        String newToken = companyService.setInviteStatus(id, status);
-        return new ResponseEntity<>(newToken, HttpStatus.OK);
-    }
 }

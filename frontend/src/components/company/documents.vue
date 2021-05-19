@@ -248,7 +248,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/document/byCompany?id='+this.$route.query.id,
+				url: 'http://localhost:8082/document/company?company_id='+this.$route.query.id,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -296,7 +296,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/document/download?id='+id+'&token='+localStorage.token,
+				url: 'http://localhost:8082/document/'+id+'/download?token='+localStorage.token,
 				responseType: 'blob'
 			})
 			.then(function(response) {return response;})
@@ -330,13 +330,10 @@ export default {
 		uploadDocument(){
 			let name = this.$refs.newDocumentName.$el.value;
 			if(this.documentBinary == null || name == ""){
-				// console.log(this.documentBinary);
-				// console.log(name);
 				alert("The inputs mustn't be empty");
 				return;
 			}
 			if(localStorage.token == undefined){
-				alert("Don't try hack us");
 				return;
 			}
 
@@ -376,6 +373,11 @@ export default {
 					alert("You haven't permission");
 					return;
 				}
+
+				if(status == 500){
+					alert("The maximum file size of 20 MB has probably been exceeded");
+					return;
+				}
 				
 				if(status == 200){
 					// let data = response.data;
@@ -401,7 +403,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/document/download?id='+id+'&token='+localStorage.token,
+				url: 'http://localhost:8082/document/'+id+'/download?token='+localStorage.token,
 				responseType: 'blob'
 			})
 			.then(function(response) {return response;})
@@ -540,7 +542,7 @@ export default {
 
 			var query = this.$http(
 			{
-				method: 'post',
+				method: 'put',
 				url: 'http://localhost:8082/document/request/status?id='+id+'&status='+status+'&token='+localStorage.token,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
@@ -576,7 +578,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'delete',
-				url: 'http://localhost:8082/document/delete?id='+id+'&token='+localStorage.token,
+				url: 'http://localhost:8082/document/'+id+'/delete?token='+localStorage.token,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}

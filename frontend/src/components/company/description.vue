@@ -95,10 +95,10 @@ export default {
 			}
 			// console.log(this.logoBinary);
 			let formData = new FormData();
-			formData.append('id', localStorage.company_id);
+			// formData.append('id', localStorage.company_id);
 			formData.append('token', localStorage.token);
 			formData.append('file', this.logoBinary);
-			var query = this.$http.post('http://localhost:8082/company/logo',
+			var query = this.$http.put('http://localhost:8082/company/'+localStorage.company_id+'/logo',
 			formData,
 				{
 					headers: {
@@ -109,11 +109,9 @@ export default {
 			.catch(function (error) {return error.response;});
 			query.then((response) => {
 				let status = response.status;
-				if (status == 409) {
-					// console.log("catch error 404");
-					return;
-				}
-				if (status == 200) {
+				if (status == 413) {
+					alert("Logo size is too large. Max size is 5MB.");
+				}else if (status == 200) {
 					console.log("Logo was successfully uploaded");
 				}else{
 					alert("Something went wrong! The logo hasn't been uploaded");
@@ -140,7 +138,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/company/read?id='+this.$route.query.id,
+				url: 'http://localhost:8082/company/'+this.$route.query.id,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -191,7 +189,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'put',
-				url: 'http://localhost:8082/company/updateStatus?id='+this.$route.query.id+'&message=null&status=PUBLISHED&token='+localStorage.token,
+				url: 'http://localhost:8082/company/'+this.$route.query.id+'/status?message=null&status=PUBLISHED&token='+localStorage.token,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -218,7 +216,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'put',
-				url: 'http://localhost:8082/company/updateStatus?id='+this.$route.query.id+'&message='+this.$refs.declineNoteInput.$el.value+'&status=NOT_APPROVED&token='+localStorage.token,
+				url: 'http://localhost:8082/company/'+this.$route.query.id+'/status?message='+this.$refs.declineNoteInput.$el.value+'&status=NOT_APPROVED&token='+localStorage.token,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -305,8 +303,8 @@ export default {
 			this.$refs.nowCompanyName.style.display = "none";
 			this.$refs.nowDescription.style.display = "none";
 
+			this.$refs.changeLogo.$el.style.display = "block";
 			this.$refs.changeLogo.$el.style.visibility = "visible";
-			this.$refs.changeLogo.$el.style.visibility = "block";
 			this.$refs.changeInfo.$el.disabled = true;
 			this.$refs.saveInfo.$el.disabled = false;
 			this.$refs.cancelInfo.$el.disabled = false;
@@ -318,6 +316,7 @@ export default {
 			this.$refs.nowDescription.style.display = "block";
 
 			this.$refs.changeLogo.$el.style.display = "none";
+			this.$refs.changeLogo.$el.style.visibility = "hidden";
 			this.$refs.changeInfo.$el.disabled = false;
 			this.$refs.saveInfo.$el.disabled = true;
 			this.$refs.cancelInfo.$el.disabled = true;

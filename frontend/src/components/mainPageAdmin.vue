@@ -77,101 +77,69 @@ export default {
 		updateTable(){
 			this.pageNumber = 1;
 			this.pageColumn = 1;
-            this.companies_data = this.getCompanies();
-            this.pageColumn = this.getPageColumn();
-            this.searched = this.companies_data;
-        },
+			this.getCompanies();
+		},
 
 		goToCompany(id){
 			this.$router.push("company?id="+id);
 		},
 		getCompanies() {
-			// this.companies_data = [[]];
 			let data = [];
-			this.$http(
-				{
-					method: 'get',
-					// url: 'http://localhost:8082/company/published?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1),
-					url: 'http://localhost:8082/company?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1) + '&filter=' + this.search,
-					headers: {
-						"Content-type": "application/json; charset=UTF-8"
-					}
-				})
-				.then(function (response) {
-					let content = response.data.content;
-					console.log(content);
-					for (let i = 0; i < content.length; i++) {
-						if(content[i].logo == null){
-							content[i].logo = "https://github.com/MisterZurg/DocHolder/blob/main/frontend/src/icons/nologo.png?raw=true";
-						}else{
-							content[i].logo = "data:image/jpeg;base64," + content[i].logo;
-						}
-
-						data.push({
-							id: i,
-							company_id: content[i].id,
-							name: content[i].name,
-							description: content[i].description,
-							logo: content[i].logo,
-							status: content[i].status
-						});
-					}
-					return data;
-				})
-				.catch(function (error) {
-					console.log("catch error : " + error);
-					return [];
-				});
-
-			return data;
-		},
-		getPageColumn() {
 			var query = this.$http(
 				{
 					method: 'get',
-					url: 'http://localhost:8082/company/count?filter=' + this.search,
+					url: 'http://localhost:8082/company?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1) + '&name=' + this.search,
 					headers: {
 						"Content-type": "application/json; charset=UTF-8"
 					}
 				})
-				.then(function (response) {
-					let column = response.data;
-					return Math.ceil(column);
-				})
-				.catch(function (error) {
-					console.log("catch error : " + error);
-					// return error;
-				});
+				.then(function(response) {return response;})
+				.catch(function(error) {return error.response;});
+
 			query.then((response) => {
-				// if error happened
-				if (response.status != undefined) {
-					console.log(response);
-					let status = response.response.status;
-					if (status == 404) {
-						alert("No any company yet. Try create one and come back");
-					} else {
-						alert("Critical error. Try later");
-					}
+				let status = response.status;
+				if(status != 200){
+					this.searched = [];
+					this.pageColumn = 1;
 					return;
 				}
-				this.pageColumn = Math.ceil(response / this.companiesPerPage);
+				
+				let content = response.data.content;
+				console.log(content);
+				for (let i = 0; i < content.length; i++) {
+					if(content[i].logo == null){
+							content[i].logo = "https://github.com/MisterZurg/DocHolder/blob/main/frontend/src/icons/nologo.png?raw=true";
+					}else{
+						content[i].logo = "data:image/jpeg;base64," + content[i].logo;
+					}
+
+					data.push({
+						id: i,
+						company_id: content[i].id,
+						name: content[i].name,
+						description: content[i].description,
+						logo: content[i].logo,
+						status: content[i].status
+					});
+				}
+
+				let maxpages = Math.abs(parseInt(response.headers.range.match(/-\d+/)));
+				this.pageColumn = maxpages;
+				this.searched = data;
 			});
-			return;
+			return null;
 		},
 		pageClick(page) {
 			this.pageNumber = page;
-			this.companies_data = this.getCompanies();
-			this.searched = this.companies_data;
+			this.getCompanies();
 		},
 		nextPage() {
 			this.pageNumber++;
-			this.companies_data = this.getCompanies();
-			this.searched = this.companies_data;
+			this.getCompanies();
 		},
 		prevPage() {
 			this.pageNumber--;
-			this.companies_data = this.getCompanies();
-			this.searched = this.companies_data;
+			this.getCompanies();
 		},
 	},
 }

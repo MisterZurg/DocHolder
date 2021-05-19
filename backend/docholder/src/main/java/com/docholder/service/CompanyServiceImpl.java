@@ -144,7 +144,7 @@ public class CompanyServiceImpl implements CompanyService{
             jobOffer.setUserId( userRepository.findUserByEmail(email).getId() );
             jobOfferRepository.save(jobOffer);
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return false;
         }
 

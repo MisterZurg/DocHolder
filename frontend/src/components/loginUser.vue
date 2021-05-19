@@ -133,7 +133,7 @@ export default {
 				if (error != undefined) {
 					let status = error.response.status;
 					if (status == 404) {
-						alert("User doesn't exist");
+						alert("Incorrect credentials. Try again.");
 					} else {
 						alert("Error. Try later");
 					}

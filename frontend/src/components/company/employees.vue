@@ -115,7 +115,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/user/byCompany?id='+this.$route.query.id,
+				url: 'http://localhost:8082/user/company?company_id='+this.$route.query.id,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -156,7 +156,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'post',
-				url: 'http://localhost:8082/company/invite?email='+this.offerEmail+'&token='+localStorage.token,
+				url: 'http://localhost:8082/user/invite?email='+this.offerEmail+'&token='+localStorage.token,
 				data: {
 					"companyId": localStorage.company_id,
 					"employerId": localStorage.id,
@@ -174,7 +174,7 @@ export default {
 				let status = response.status;
 
 				if(status == 304){
-					alert("User with this email doesn't exist");
+					alert("A user with such credentials doesn't exists");
 					return;
 				}else if(status == 403){
 					alert("You haven't permission for this action");
