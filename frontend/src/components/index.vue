@@ -74,10 +74,10 @@
 				<h2>How did DocHolder started?</h2>
 				<br/>
 				<p>
-					Lorem ipsum dolor sit amet, consectetur adipisicing elit.<br/>
-					Error quibusdam, non molestias et! Earum magnam, similique,<br/>
-					quo recusandae placeat dicta asperiores modi sint ea repudiandae maxime?<br/>
-					Quae non explicabo, neque.
+					The task was to create a simple and at the same time<br/>
+					useful service for storing and managing company documents.<br/>
+					This project helped us study the standards and modern solutions<br/>
+					in the IT field. And so, the product is ready, welcome.
 				</p>
 			</div>
 			<br/>
