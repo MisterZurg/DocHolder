@@ -167,7 +167,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'post',
-				url: 'http://localhost:8082/company?token='+localStorage.token,
+				url: 'http://40.69.86.206:8082/company?token='+localStorage.token,
 				data: {
 					"name": "Company name",
 					"description": "Description",
@@ -272,7 +272,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/user/'+localStorage.id,
+				url: 'http://40.69.86.206:8082/user/'+localStorage.id,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
