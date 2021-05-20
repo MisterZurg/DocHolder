@@ -91,7 +91,7 @@ export default {
 			var query = this.$http(
 				{
 					method: 'get',
-					url: 'http://docker-nginx:8082/company?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1) + '&name=' + this.search + '&status=PUBLISHED',
+					url: 'http://40.69.86.206:8082/company?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1) + '&name=' + this.search + '&status=PUBLISHED',
 					headers: {
 						"Content-type": "application/json; charset=UTF-8"
 					}
