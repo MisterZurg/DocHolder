@@ -2,7 +2,7 @@ FROM node:15.11.0-alpine3.13
 
 WORKDIR /frontend
 
-COPY ./*.* .
+COPY . .
 
 RUN npm install && yarn install
 

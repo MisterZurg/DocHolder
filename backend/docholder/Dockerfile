@@ -6,6 +6,6 @@ COPY . .
 
 RUN mvn install && mvn clean install
 
-EXPOSE 8081
+EXPOSE 8082
 
 CMD mvn spring-boot:run

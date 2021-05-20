@@ -143,7 +143,8 @@ export default {
 			// if no error
 			// console.log(this.$root.$children[0]);
 			this.$root.$children[0].login();
-			this.$router.push('/');
+			// this.$router.next('/');
+			window.location.href = '/';
 			});
 		}
 	}

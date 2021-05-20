@@ -96,7 +96,7 @@ export default {
 			// console.log(this.logoBinary);
 			let formData = new FormData();
 			// formData.append('id', localStorage.company_id);
-			formData.append('token', localStorage.token);
+			// formData.append('token', localStorage.token);
 			formData.append('file', this.logoBinary);
 			var query = this.$http.put('http://localhost:8082/company/'+localStorage.company_id+'/logo',
 			formData,
@@ -189,7 +189,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'put',
-				url: 'http://localhost:8082/company/'+this.$route.query.id+'/status?message=null&status=PUBLISHED&token='+localStorage.token,
+				url: 'http://localhost:8082/company/'+this.$route.query.id+'/status?message=null&status=PUBLISHED',
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -216,7 +216,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'put',
-				url: 'http://localhost:8082/company/'+this.$route.query.id+'/status?message='+this.$refs.declineNoteInput.$el.value+'&status=NOT_APPROVED&token='+localStorage.token,
+				url: 'http://localhost:8082/company/'+this.$route.query.id+'/status?message='+this.$refs.declineNoteInput.$el.value+'&status=NOT_APPROVED',
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -259,7 +259,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'put',
-				url: 'http://localhost:8082/company?token='+localStorage.token,
+				url: 'http://localhost:8082/company',
 				data: {
 					"id": localStorage.company_id,
 					"name": this.$refs.changeCompanyNameInput.$el.value,

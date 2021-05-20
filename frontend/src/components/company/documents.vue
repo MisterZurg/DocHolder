@@ -296,7 +296,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/document/'+id+'/download?token='+localStorage.token,
+				url: 'http://localhost:8082/document/'+id+'/download',
 				responseType: 'blob'
 			})
 			.then(function(response) {return response;})
@@ -344,7 +344,7 @@ export default {
 
 			let formData = new FormData();
 			formData.append('file', this.documentBinary);
-			formData.append('token', localStorage.token);
+			// formData.append('token', localStorage.token);
 			var documentDto = {
 				"name": name,
 				"company_id": localStorage.company_id,
@@ -403,7 +403,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/document/'+id+'/download?token='+localStorage.token,
+				url: 'http://localhost:8082/document/'+id+'/download',
 				responseType: 'blob'
 			})
 			.then(function(response) {return response;})
@@ -465,7 +465,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'post',
-				url: 'http://localhost:8082/document/request?token='+localStorage.token,
+				url: 'http://localhost:8082/document/request',
 				data: {
 					"userId": localStorage.id,
 					"companyId": this.$route.query.id,
@@ -543,7 +543,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'put',
-				url: 'http://localhost:8082/document/request/status?id='+id+'&status='+status+'&token='+localStorage.token,
+				url: 'http://localhost:8082/document/request/status?id='+id+'&status='+status,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -578,7 +578,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'delete',
-				url: 'http://localhost:8082/document/'+id+'/delete?token='+localStorage.token,
+				url: 'http://localhost:8082/document/'+id+'/delete',
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}

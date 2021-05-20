@@ -84,9 +84,9 @@ public class UserController {
     @PutMapping(value = "/{id}/avatar", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateAvatar(
             @PathVariable("id") UUID id,
-            @RequestParam String token,
-            @RequestPart("file") MultipartFile avatar)
-    {
+            @RequestPart("file") MultipartFile avatar,
+            @RequestHeader(value="Authorization", required = false) String token
+    ){
         if(avatar.getSize() > 5242880) return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
 
         return userService.updateAvatar(id, avatar)
@@ -96,8 +96,11 @@ public class UserController {
 
     @PreAuthorize("hasPermission(#token, 'updateCompany')")
     @PostMapping(value = "/invite")
-    public ResponseEntity<?> invite(@RequestBody JobOffer jobOffer, @RequestParam String email, @RequestParam String token){
-
+    public ResponseEntity<?> invite(
+            @RequestBody JobOffer jobOffer,
+            @RequestParam String email,
+            @RequestHeader(value="Authorization", required = false) String token
+    ){
         return companyService.invite(jobOffer, email)
                 ? new ResponseEntity<>(HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
@@ -127,8 +130,8 @@ public class UserController {
     public ResponseEntity<?> setInviteStatus(
             @PathVariable UUID id,
             @RequestParam NoticeStatus status,
-            @RequestParam String token)
-    {
+            @RequestHeader(value="Authorization", required = false) String token
+    ){
         String newToken = companyService.setInviteStatus(id, status);
         return new ResponseEntity<>(newToken, HttpStatus.OK);
     }

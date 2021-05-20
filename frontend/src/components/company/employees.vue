@@ -156,7 +156,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'post',
-				url: 'http://localhost:8082/user/invite?email='+this.offerEmail+'&token='+localStorage.token,
+				url: 'http://localhost:8082/user/invite?email='+this.offerEmail,
 				data: {
 					"companyId": localStorage.company_id,
 					"employerId": localStorage.id,

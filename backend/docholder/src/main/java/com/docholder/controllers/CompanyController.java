@@ -50,7 +50,10 @@ public class CompanyController {
 
     @PreAuthorize("hasPermission(#token, 'createCompany')")
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody CompanyDto companyDto, @RequestParam String token) {
+    public ResponseEntity<?> create(
+            @RequestBody CompanyDto companyDto,
+            @RequestHeader(value="Authorization", required = false) String token
+    ){
         Company company = companyMapper.dtoToEntity(companyDto);
 
         // Will move to CustomPermissionEvaluator
@@ -110,9 +113,9 @@ public class CompanyController {
     @PutMapping(value = "/{id}/logo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateLogo(
             @PathVariable UUID id,
-            @RequestParam String token,
-            @RequestPart("file") MultipartFile logo)
-    {
+            @RequestPart("file") MultipartFile logo,
+            @RequestHeader(value="Authorization", required = false) String token
+    ){
         if(logo.getSize() > 5242880) return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
 
         return companyService.updateLogo(id, logo)
@@ -122,7 +125,11 @@ public class CompanyController {
 
     @PreAuthorize("hasPermission(#token, 'updateCompany')")
     @PutMapping
-    public ResponseEntity<?> update(@RequestBody CompanyDto companyDto, @RequestParam String token) {
+    public ResponseEntity<?> update(
+            @RequestBody CompanyDto companyDto,
+            @RequestHeader(value="Authorization", required = false) String token)
+    {
+
         Company company = companyMapper.dtoToEntity(companyDto);
         company.setStatus(CompanyStatus.READY_TO_VERIFY);
 
@@ -139,8 +146,8 @@ public class CompanyController {
             @PathVariable UUID id,
             @RequestParam CompanyStatus status,
             @RequestParam String message,
-            @RequestParam String token)
-    {
+            @RequestHeader(value="Authorization", required = false) String token
+    ){
         boolean is_updated = companyService.updateStatus(id, status, message);
 
         return is_updated

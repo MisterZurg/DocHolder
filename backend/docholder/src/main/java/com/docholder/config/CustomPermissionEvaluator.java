@@ -31,7 +31,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 
     @Override
     public boolean hasPermission(Authentication auth, Object obj, Object permission) {
-
+//
 //        System.out.println("auth: "+auth);
 //        System.out.println("obj: "+obj);
 //        System.out.println("permission: "+permission);

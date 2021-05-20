@@ -131,7 +131,7 @@ export default {
 
 			let formData = new FormData();
 			// formData.append('id', localStorage.id);
-			formData.append('token', localStorage.token);
+			// formData.append('token', localStorage.token);
 			formData.append('file', this.avatarBinary);
 			var query = this.$http.put('http://localhost:8082/user/'+localStorage.id+'/avatar',
 			formData,
@@ -276,7 +276,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'put',
-				url: 'http://localhost:8082/user/invite/'+id+'/status?status='+status+'&token='+localStorage.token,
+				url: 'http://localhost:8082/user/invite/'+id+'/status?status='+status,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
