@@ -148,7 +148,7 @@ export default {
 			var query = this.$http(
 				{
 					method: 'post',
-					url: 'http://localhost:8082/user',
+					url: 'http://40.69.86.206:8082/user',
 					data: {
 						"name": name,
 						"surname": surname,

@@ -115,7 +115,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/user/company?company_id='+this.$route.query.id,
+				url: 'http://40.69.86.206:8082/user/company?company_id='+this.$route.query.id,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -156,7 +156,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'post',
-				url: 'http://localhost:8082/user/invite?email='+this.offerEmail,
+				url: 'http://40.69.86.206:8082/user/invite?email='+this.offerEmail,
 				data: {
 					"companyId": localStorage.company_id,
 					"employerId": localStorage.id,

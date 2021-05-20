@@ -50,7 +50,7 @@ export default {
             var query = this.$http(
                 {
                     method: 'get',
-                    url: 'http://localhost:8082/company/10/0/',
+                    url: 'http://40.69.86.206:8082/company/10/0/',
                     headers: {
                         "Content-type": "application/json; charset=UTF-8"
                     }

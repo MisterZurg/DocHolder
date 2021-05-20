@@ -248,7 +248,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/document/company?company_id='+this.$route.query.id,
+				url: 'http://40.69.86.206:8082/document/company?company_id='+this.$route.query.id,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -296,7 +296,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/document/'+id+'/download',
+				url: 'http://40.69.86.206:8082/document/'+id+'/download',
 				responseType: 'blob'
 			})
 			.then(function(response) {return response;})
@@ -356,7 +356,7 @@ export default {
 				type: 'application/json'
 			});
 			formData.append('documentDto', documentDto);
-			var query = this.$http.post( 'http://localhost:8082/document/upload',
+			var query = this.$http.post( 'http://40.69.86.206:8082/document/upload',
 				formData,
 				{
 					headers: {
@@ -403,7 +403,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/document/'+id+'/download',
+				url: 'http://40.69.86.206:8082/document/'+id+'/download',
 				responseType: 'blob'
 			})
 			.then(function(response) {return response;})
@@ -465,7 +465,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'post',
-				url: 'http://localhost:8082/document/request',
+				url: 'http://40.69.86.206:8082/document/request',
 				data: {
 					"userId": localStorage.id,
 					"companyId": this.$route.query.id,
@@ -509,7 +509,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'get',
-				url: 'http://localhost:8082/document/requests?company_id='+this.$route.query.id,
+				url: 'http://40.69.86.206:8082/document/requests?company_id='+this.$route.query.id,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -543,7 +543,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'put',
-				url: 'http://localhost:8082/document/request/status?id='+id+'&status='+status,
+				url: 'http://40.69.86.206:8082/document/request/status?id='+id+'&status='+status,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}
@@ -578,7 +578,7 @@ export default {
 			var query = this.$http(
 			{
 				method: 'delete',
-				url: 'http://localhost:8082/document/'+id+'/delete',
+				url: 'http://40.69.86.206:8082/document/'+id+'/delete',
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"
 				}

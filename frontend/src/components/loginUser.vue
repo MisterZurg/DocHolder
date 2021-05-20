@@ -91,7 +91,7 @@ export default {
 			var query = this.$http(
 				{
 					method: 'post',
-					url: 'http://localhost:8082/user/auth',
+					url: 'http://40.69.86.206:8082/user/auth',
 					data: {
 						"email": email,
 						"password": password

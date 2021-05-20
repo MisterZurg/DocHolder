@@ -88,7 +88,7 @@ export default {
 			var query = this.$http(
 				{
 					method: 'get',
-					url: 'http://localhost:8082/company?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1) + '&name=' + this.search,
+					url: 'http://40.69.86.206:8082/company?limit=' + this.companiesPerPage + '&page=' + (this.pageNumber - 1) + '&name=' + this.search,
 					headers: {
 						"Content-type": "application/json; charset=UTF-8"
 					}
