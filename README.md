@@ -15,7 +15,7 @@ in the IT field. And so, the product is ready, welcome.
 
 # FAQ (from our pre-defense/defense)
 ## Theory
-## Why did you use Reverse Proxy?
+### Why did you use Reverse Proxy?
 — Reverse proxies provide anonymity for our backend server, not clients.
 When using a forward proxy it's more about client anonymity, which wasn't our goal. 
 
